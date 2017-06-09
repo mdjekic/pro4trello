@@ -442,7 +442,10 @@ TrelloPro.refreshData = function() {
       // count points
       list.totalPoints = 0;
       $this.find('.tpro-point').each(function(){
-        list.totalPoints += parseInt(jQuery.trim(jQuery(this).text()).match(/\d+/)[0]);
+          let matches = jQuery.trim(jQuery(this).text()).match(/[.,\d]+/g);
+          if(matches && matches[0]){
+              list.totalPoints += parseFloat(matches[0].replace(",", "."));
+          }
       });
 
       // count checklist tasks
