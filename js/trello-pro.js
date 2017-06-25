@@ -127,6 +127,24 @@ TrelloPro.cardNameChange = function ($title,refreshData) {
       }
     }
 
+    // intendation       
+    // intends the card according to the amount of dashes / hyphens at the beginning
+    // of the card title
+    if (TrelloPro.settings['intend-cards']) {
+      // use title text without the card number attached to it
+      let cardTitle = $title.text().replace($projectNumber.text(), '');    
+      if (cardTitle.match(/^(\-{3}|\~{3})/g)) {
+        filterAttributes.push('tpro-intend-level3');
+        html = html.replace(/^(\-{3}|\~{3})/g, '');
+      } else if (cardTitle.match(/^(\-{2}|\~{2})/g)) {
+        filterAttributes.push('tpro-intend-level2');
+        html = html.replace(/^(\-{2}|\~{2})/g, '');
+      } else if (cardTitle.match(/^(\-{1}|\~{1})/g)) {
+        filterAttributes.push('tpro-intend-level1');        
+        html = html.replace(/^(\-{1}|\~{1})/g, '');        
+      }
+    }
+
     // wrap HTML
     $htmlWrapper = jQuery('<div></div>').html(html);
 
@@ -746,6 +764,7 @@ TrelloPro.load = function () {
     TrelloPro.toggleCssInject('hide-add-list');
     TrelloPro.toggleCssInject('beautify-markdown');
     TrelloPro.toggleCssInject('compact-cards');
+    TrelloPro.toggleCssInject('intend-cards');
 
 		TrelloPro.loaded = true;
 
@@ -754,7 +773,8 @@ TrelloPro.load = function () {
       || TrelloPro.settings['parse-labels']
       || TrelloPro.settings['parse-time-entries']
       || TrelloPro.settings['parse-priority-marks']
-      || TrelloPro.settings['parse-points'];
+      || TrelloPro.settings['parse-points']
+      || TrelloPro.settings['intend-cards'];
     if (parsing_on) {
       // run card name processing on all initial cards
       let $initCards = jQuery('.list-card-title');
