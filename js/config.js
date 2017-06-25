@@ -45,6 +45,8 @@ TrelloPro.config = {
 		'show-list-stats-progressbar': false,
 		'hide-add-list': false,
 		'custom-css': false,
-		'custom-css-input': ''
+		'custom-css-input': '',
+
+		'intend-cards': false
 	}
 }
