@@ -658,7 +658,7 @@ let buildProjectFilter = function () {
     return false;
   });
 
-  jQuery('.board-header-btns.mod-left').append($menuItem);
+  jQuery('.board-header-btns.mod-left').last().after($menuItem);
   jQuery('body').append($filterPopup);
 }
 
