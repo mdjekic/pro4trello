@@ -192,8 +192,10 @@ let processCardTitleChange = function ($title,refreshData) {
 
 			// markup
 			if (TrelloPro.settings['parse-markup']) {
-				html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+				html = html
+				  .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
 			    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+					.replace(/_(.+?)_/g, '<em>$1</em>')
 			    .replace(/~~(.+?)~~/g, '<strike>$1</strike>')
 			    .replace(/\`(.+?)\`/g, '<code>$1</code>');
 	    }
