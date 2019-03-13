@@ -28,6 +28,38 @@ TrelloPro.refreshing = false;
 // -----------------------------------------------------------------------------
 
 /**
+ * Sums 2 time entries
+ *
+ * @param {string} startTime
+ * @param {string} endTime
+ * @return {string}
+ */
+let sumTimeEntries = function(startTime, endTime) {
+  let times = [0, 0];
+  let max = times.length;
+
+  startTime = (startTime || '').split(':');
+  endTime = (endTime || '').split(':');
+
+  for (let i = 0; i < max; i++) {
+    startTime[i] = isNaN(parseInt(startTime[i])) ? 0 : parseInt(startTime[i]);
+    endTime[i] = isNaN(parseInt(endTime[i])) ? 0 : parseInt(endTime[i]);
+		times[i] = startTime[i] + endTime[i];
+  }
+
+  let hours = times[0];
+  let minutes = times[1];
+
+  if (minutes >= 60) {
+    let h = (minutes / 60) << 0;
+    hours += h;
+    minutes -= 60 * h;
+  }
+
+  return ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2);
+}
+
+/**
  * Prepares a given string name to be used as a HTML attribute
  *
  * @param {string} name
@@ -59,7 +91,7 @@ let toggleCssInject = function(name) {
  * @param {object} object
  */
 let log = function(object) {
-	return;
+	//return;
 	console.log(object);
 };
 
@@ -394,7 +426,7 @@ let refreshListStats = function() {
     list.totalCards = parseInt($this.find('.list-header-num-cards').text());
 		list.totalVisibleCards = $this.find('.list-card').filter(visibleFilter).length;
 
-    // count points
+		// count points
     list.totalPoints = 0;
 		list.totalVisiblePoints = 0;
     $this.find('.tpro-point').each(function(){
@@ -402,6 +434,18 @@ let refreshListStats = function() {
     });
 		$this.find('.list-card').filter(visibleFilter).find('.tpro-point').each(function(){
       list.totalVisiblePoints += parseFloat(jQuery.trim(jQuery(this).text()));
+    });
+
+		// count time
+    list.totalTime = '0:00';
+		list.totalVisibleTime = '0:00';
+    $this.find('.tpro-time-entry').each(function(){
+			let t = jQuery.trim(jQuery(this).text());
+			list.totalTime = sumTimeEntries(list.totalTime, t);
+    });
+		$this.find('.list-card').filter(visibleFilter).find('.tpro-time-entry').each(function(){
+			let t = jQuery.trim(jQuery(this).text());
+			list.totalVisibleTime = sumTimeEntries(list.totalVisibleTime, t);
     });
 
     // count checklist tasks
@@ -855,6 +899,15 @@ let buildListStats = function($list,list) {
 		    +'</span>');
 	  }
 
+		// time entries
+		if(TrelloPro.settings['parse-time-entries']) {
+			$stats.prepend(
+				'<span class="tpro-stat time-sum" title="Total Time">'
+					+'<i class="fa fa-calculator" aria-hidden="true"></i> '
+					+'<span></span>'
+				+'</span>');
+		}
+
 		// progress bar
 		if(TrelloPro.settings['show-list-stats-progressbar']) {
 			$stats.append(
@@ -880,6 +933,12 @@ let buildListStats = function($list,list) {
 		: list.totalVisibleCards + '/' + list.totalCards
 	);
 
+	// time sum
+	$stats.find('.tpro-stat.time-sum span').text(list.totalVisibleTime == list.totalTime
+		? list.totalTime
+		: list.totalVisibleTime + '/' + list.totalTime
+	);
+
   // tasks count
 	$stats.find('.tpro-stat.checklist span').text(list.completedTasks + '/' + list.totalTasks);
 
@@ -902,6 +961,8 @@ let buildListStats = function($list,list) {
 			: formatPoints(list.totalVisiblePoints) + '/' + formatPoints(list.totalPoints)
 		);
   }
+
+	// TODO hours
 
 	// progress bar
 	if(TrelloPro.settings['show-list-stats-progressbar']) {
