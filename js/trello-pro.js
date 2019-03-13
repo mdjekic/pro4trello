@@ -234,6 +234,16 @@ let rebuildDynamicStyles = function() {
   }
   if(filtered) css += '.list-card { display:none } ';
 
+	if(TrelloPro.settings.filters.lists) {
+		css += '.list-wrapper { display:none } ';
+		for(let list of TrelloPro.settings.filters.lists) {
+			css += '.tpro-list-'+list+' { display:inline-block !important; } ';
+		}
+		if(TrelloPro.settings.filters.lists.length != TrelloPro.lists.length) {
+			css += '#tpro-header-button-lists { background-color: #2c3e50; } ';
+		}
+	}
+
   TrelloPro.$dynamicStyles.html(css);
 }
 
@@ -353,8 +363,10 @@ let refreshData = function(msg, callback) {
  * Refreshes list stats
  */
 let refreshListStats = function() {
-	if(!TrelloPro.loaded || !TrelloPro.settings['show-list-stats']) return;
+	if(!TrelloPro.loaded) return;
 	log('refreshing list stats...');
+
+	// TODO get lists from API
 
 	// get all lists
   let lists = [];
@@ -378,6 +390,7 @@ let refreshListStats = function() {
     // set basics
     list.title = $this.find('textarea.list-header-name').val();
 		list.id = renderAttrName(list.title);
+		list.index = i;
     list.totalCards = parseInt($this.find('.list-header-num-cards').text());
 		list.totalVisibleCards = $this.find('.list-card').filter(visibleFilter).length;
 
@@ -385,10 +398,10 @@ let refreshListStats = function() {
     list.totalPoints = 0;
 		list.totalVisiblePoints = 0;
     $this.find('.tpro-point').each(function(){
-      list.totalPoints += parseInt(jQuery.trim(jQuery(this).text()).match(/\d+/)[0]);
+      list.totalPoints += parseFloat(jQuery.trim(jQuery(this).text()));
     });
 		$this.find('.list-card').filter(visibleFilter).find('.tpro-point').each(function(){
-      list.totalVisiblePoints += parseInt(jQuery.trim(jQuery(this).text()).match(/\d+/)[0]);
+      list.totalVisiblePoints += parseFloat(jQuery.trim(jQuery(this).text()));
     });
 
     // count checklist tasks
@@ -400,12 +413,26 @@ let refreshListStats = function() {
       list.totalTasks += parseInt(stats[1]);
     });
 
-		buildListStats($this,list);
+		if(TrelloPro.settings['show-list-stats']) {
+			buildListStats($this,list);
+		}
+
+		// attach ID
+		$this.parent().addClass('tpro-list-'+list.id);
+
+		// TODO merge w/ API lists
     lists.push(list);
   }
 
 	TrelloPro.lists = lists;
 	store('lists_'+TrelloPro.boardId, TrelloPro.lists);
+}
+
+/**
+ * Refreshes list filter rendering
+ */
+let refreshListFilter = function() {
+	jQuery('#tpro-lists-filter').text(TrelloPro.settings.filters.lists.length + '/' + TrelloPro.lists.length);
 }
 
 // -----------------------------------------------------------------------------
@@ -551,9 +578,7 @@ let buildMenu = function () {
       TrelloPro.$settingsPane.fadeIn(150);
     }
   });
-  setTimeout(function(){
-    TrelloPro.$button.prependTo(jQuery('.board-header-btns.mod-right'));
-  },500);
+  TrelloPro.$button.prependTo(jQuery('.board-header-btns.mod-right'));
 }
 
 /**
@@ -636,7 +661,7 @@ let buildProjectFilter = function () {
   });
 
   // create filter popup
-  $filterPopup = jQuery('<div id="tpro-filter-popup"></div>');
+  let $filterPopup = jQuery('<div id="tpro-filter-popup" class="tpro-popup"></div>');
   $filterPopup.append(
     '<div class="pop-over-header js-pop-over-header">'
       +'<span class="pop-over-header-title">Filter Cards</span>'
@@ -658,7 +683,124 @@ let buildProjectFilter = function () {
     return false;
   });
 
-  jQuery('.board-header-btns.mod-left').append($menuItem);
+  jQuery('.board-header-btns.mod-left').first().append($menuItem);
+  jQuery('body').append($filterPopup);
+}
+
+/**
+ * Builds the Lists Filter
+ */
+let buildListsFilter = function () {
+	log('building lists filter...');
+
+	// TODO renaming boards makes a messy mess
+
+  // create menu item
+  let $menuItem = jQuery('<a id="tpro-header-button-lists" class="board-header-btn" href="#"></a>');
+
+  // try to apply pre-loaded filter
+  let $filter = jQuery('<span id="tpro-lists-filter" data-lists="[]" class="board-header-btn-text u-text-underline">'+TrelloPro.lists.length+'/'+TrelloPro.lists.length+'</span>');
+  if(TrelloPro.settings.filters.lists) {
+    $filter.text(TrelloPro.settings.filters.lists.length + '/' + TrelloPro.lists.length);
+  }
+  $menuItem.append('<span class="board-header-btn-icon icon-sm icon-list"></span>');
+  $menuItem.append(jQuery('<span class="board-header-btn-text"><span>Lists: </span></span>').append($filter));
+
+	// add behaviour
+  $menuItem.on('click',function(e){
+    let $popup = jQuery('#tpro-listfilter-popup');
+    let $this = jQuery(this);
+    if($popup.is(':visible')) { $popup.hide(); }
+    else {
+      // render lists data
+      let $ul = $popup.find('ul').html('<li class="check-filter-item show-all" href="#"><span>Show All</span></li>');
+			if(!TrelloPro.settings.filters.lists) {
+				TrelloPro.settings.filters.lists = TrelloPro.lists.map(list => list.id);
+			}
+			jQuery('#tpro-listfilter-popup').attr('data-lists');
+      for(list of TrelloPro.lists) {
+        let $li  = jQuery(
+					'<li class="check-filter-item" data-list="'+list.id+'" href="#">'
+					  +'<div class="check-filter-item-checkbox enabled">'
+					    +'<span class="icon-sm icon-check check-filter-item-check"></span>'
+					  +'</div>'
+					  +'<div class="check-filter-item-details">'
+					    +list.title+' ('+list.totalVisibleCards+')'
+					  +'</div>'
+					+'</li>'
+        );
+				if(jQuery.inArray(list.id, TrelloPro.settings.filters.lists) != -1) $li.addClass('checked');
+        $ul.append($li);
+      }
+
+      // attach filter behaviour
+			$ul.find('.check-filter-item .check-filter-item-checkbox').on('click',function(evt){
+        let $this = jQuery(this).parent();
+
+				// check all
+				if($this.hasClass('show-all')) {
+					TrelloPro.settings.filters.lists = TrelloPro.lists.map(list => list.id);
+					$this.parent().find('.check-filter-item').not('.show-all').addClass('checked');
+				} else {
+					// check specific list
+					let list = $this.data().list;
+					if($this.hasClass('checked')) {
+						// remove list
+						let index = TrelloPro.settings.filters.lists.indexOf(list);
+						if (index !== -1) TrelloPro.settings.filters.lists.splice(index, 1);
+						$this.removeClass('checked');
+					} else {
+						// add list
+						TrelloPro.settings.filters.lists.push(list);
+						// remove dulpicates
+						TrelloPro.settings.filters.lists = TrelloPro.settings.filters.lists.sort().filter(function(item, pos, arr) {
+								return !pos || item != arr[pos - 1];
+						});
+						$this.addClass('checked');
+					}
+				}
+
+				refreshListFilter();
+        rebuildDynamicStyles();
+        saveSettings();
+
+        evt.preventDefault();
+        return false;
+      });
+
+      // show popup
+      $popup.css({
+        top: $this.position().top + $this.offset().top + $this.outerHeight(true) + 6,
+        left: $this.offset().left
+      }).show();
+    }
+
+    e.preventDefault();
+    return false;
+  });
+
+	// create filter popup
+  let $filterPopup = jQuery('<div id="tpro-listfilter-popup" class="tpro-popup"></div>');
+  $filterPopup.append(
+    '<div class="pop-over-header js-pop-over-header">'
+      +'<span class="pop-over-header-title">Show/Hide Lists</span>'
+      +'<a href="#" class="pop-over-header-close-btn icon-sm icon-close"></a>'
+    +'</div>'
+  );
+  $filterPopup.append(
+    '<div><div class="pop-over-content js-pop-over-content u-fancy-scrollbar js-tab-parent" style="max-height: 673px;">'
+      +'<div>'
+        +'<ul class="checklist-items-list"></ul>'
+      +'</div>'
+    +'</div></div>'
+  );
+  $filterPopup.find('a.pop-over-header-close-btn').on('click',function(e){
+    $filterPopup.hide();
+    e.preventDefault();
+    return false;
+  });
+
+  jQuery('.board-header-btns.mod-left').first().append($menuItem);
   jQuery('body').append($filterPopup);
 }
 
@@ -724,7 +866,7 @@ let buildListStats = function($list,list) {
 						+'</div>'
 					+'</div>'
 				+'</div>');
-				$stats.css('height','35px');
+				$stats.css('height','40px');
 		} else {
 			$stats.css('height','25px');
 		}
@@ -741,11 +883,23 @@ let buildListStats = function($list,list) {
   // tasks count
 	$stats.find('.tpro-stat.checklist span').text(list.completedTasks + '/' + list.totalTasks);
 
+  let formatPoints = function(points) {
+		let decimals = 0;
+		if(Math.floor(points.valueOf()) !== points.valueOf()) {
+			decimals = parseFloat(points).toFixed(2).toString().replace(/0+$/,'').split(".")[1].length || 0;
+		}
+    switch(decimals) {
+			case 0: return parseInt(points);
+			case 1: return parseFloat(points).toFixed(1);
+			case 2: return parseFloat(points).toFixed(2);
+		}
+	}
+
   // points
   if(TrelloPro.settings['parse-points']) {
 		$stats.find('.tpro-stat.points span').text(list.totalVisiblePoints == list.totalPoints
-			? list.totalPoints
-			: list.totalVisiblePoints + '/' + list.totalPoints
+			? formatPoints(list.totalPoints)
+			: formatPoints(list.totalVisiblePoints) + '/' + formatPoints(list.totalPoints)
 		);
   }
 
@@ -755,6 +909,19 @@ let buildListStats = function($list,list) {
 		$stats.find('.checklist-progress-bar-current').css('width',percentage+'%');
 		$stats.find('.checklist-progress-percentage').text(percentage+'%');
 	}
+}
+
+/**
+ * Builds (prepares) initial data
+ *
+ * @return {Promise}
+ */
+let buildInitialData = function() {
+	log('Building initial data...');
+	return new Promise((resolve,reject) => {
+		buildData();
+		resolve();
+	});
 }
 
 // -----------------------------------------------------------------------------
@@ -806,7 +973,7 @@ let loadCss = function(){
 		toggleCssInject('visible-card-numbers');
 		toggleCssInject('visible-labels');
 		toggleCssInject('hide-activity-entries');
-		//toggleCssInject('full-screen-cards');
+		toggleCssInject('full-screen-cards');
 		toggleCssInject('hide-add-list');
 		toggleCssInject('beautify-markdown');
 		toggleCssInject('compact-cards');
@@ -828,19 +995,6 @@ let parseCurrentCards = function() {
 		promises.push(processCardTitleChange(jQuery($initCards[i]),false));
 	}
 	return Promise.all(promises);
-}
-
-/**
- * Builds (prepares) initial data
- *
- * @return {Promise}
- */
-let buildInitialData = function() {
-	log('Building initial data...');
-	return new Promise((resolve,reject) => {
-		buildData();
-		resolve();
-	});
 }
 
 /**
@@ -889,6 +1043,7 @@ let loadBoard = function () {
 					TrelloPro.loaded = true;
 					refreshListStats();
 					buildProjectFilter();
+					//buildListsFilter();
 					//buildLabelsFilter();
 					rebuildDynamicStyles();
 					buildSettingsPane();
@@ -924,7 +1079,7 @@ let tpro = function(){
 		if(e.keyCode === 27) {
 
 			// filter popup
-			let $popup = jQuery('#tpro-filter-popup');
+			let $popup = jQuery('.tpro-popup');
 			if($popup.is(':visible')) {
 				$popup.hide();
 				return;
@@ -945,11 +1100,13 @@ let tpro = function(){
 		if(!TrelloPro.loaded) return;
 
 		// filter popup
-		let $popup = jQuery('#tpro-filter-popup');
-		if (!$popup.is(e.target) && $popup.has(e.target).length === 0) {
-				$popup.hide();
-				return;
-		}
+		jQuery('.tpro-popup').each(function(){
+			let $popup = jQuery(this);
+			if (!$popup.is(e.target) && $popup.has(e.target).length === 0) {
+					$popup.hide();
+					return;
+			}
+		});
 	});
 
 	// catch board changes

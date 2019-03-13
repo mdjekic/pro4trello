@@ -1,24 +1,14 @@
 .window {
-	left: 0px !important;
-	top: 0px !important;
-	width: 100% !important;
-	/*height: 100% !important;*/
-	border-radius: 0 !important;
-	margin: 0 !important;
-	/*overflow-y: scroll;*/
-}
-
-.window-overlay {
-	background-color: #EDEFF0 !important;
+    width: 100% !important;
+		margin: 0 !important;
+		padding-right: 176px !important; /* 168 + 8 */
 }
 
 .window-main-col {
-	width: 80% !important;
-	/*overflow-y: scroll;	*/
+	width: 95% !important;
 }
 
 .window-sidebar {
-  /*float: left !important;*/
-  width: 10% !important;
-  min-width: 140px !important;
+	position: absolute;
+	right: 0;
 }
