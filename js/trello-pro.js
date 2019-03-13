@@ -138,6 +138,10 @@ let processCardTitleChange = function ($title,refreshData) {
 	          return '<span class="tpro-project">' + project + '</span>';
 	        });
 	      }
+				// no project/group
+				if(filterAttributes.length == 0) {
+					filterAttributes.push('tpro-project-noproject');
+				}
 	    }
 
 	    // labels/tags
@@ -315,22 +319,29 @@ let buildData = function() {
   let sorter = function(a,b) { return a.key.localeCompare(b.key); }
 
   // get all projects
-  let projects = [];
-  let keys = [];
-  let $projects = jQuery('.tpro-project');
-  for(let i=0; i<$projects.length; i++) {
-    var project = jQuery.trim(jQuery($projects[i]).text());
-    var key = renderAttrName(project);
-    var index = jQuery.inArray(key,keys);
-    if(index > -1) {
-      projects[index].cardCount++;
-    }
-    else {
-      projects.push({ key: key, value: project, cardCount: 1 });
-      keys.push(key);
-    }
-  }
-  projects.sort(sorter);
+	let projects = [];
+	let keys = [];
+	let $projects = jQuery('.tpro-project');
+	for(let i=0; i<$projects.length; i++) {
+		let project = jQuery.trim(jQuery($projects[i]).text());
+		let key = renderAttrName(project);
+		let index = jQuery.inArray(key,keys);
+		if(index > -1) {
+			projects[index].cardCount++;
+		} else {
+			projects.push({ key: key, value: project, cardCount: 1 });
+			keys.push(key);
+		}
+	}
+	projects.sort(sorter);
+
+	// get special "no project" project
+	let $noProject = jQuery('.tpro-project-noproject');
+	if($noProject.length > 0) {
+		projects.unshift({ key: 'noproject', value: 'Ungrouped', cardCount: $noProject.length });
+	}
+
+	// mdjekic TODO jQuery('.tpro-noproject');
 
   // get all labels
   let labels = [];
