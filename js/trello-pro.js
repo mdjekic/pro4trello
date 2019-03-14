@@ -589,7 +589,9 @@ let buildSettingsPane = function () {
  * Builds the TrelloPro menu
  */
 let buildMenu = function () {
-  TrelloPro.$button = jQuery('<a id="tpro-filter-trigger" class="board-header-btn calendar-btn" href="#"><span class="icon-sm icon-board board-header-btn-icon"></span><span class="board-header-btn-text u-text-underline">Pro4Trello</span></a>');
+	log('building menu button...');
+
+  TrelloPro.$button = jQuery('<a id="tpro-menu-button" class="board-header-btn calendar-btn" href="#"><span class="icon-sm icon-board board-header-btn-icon"></span><span class="board-header-btn-text u-text-underline">Pro4Trello</span></a>');
   TrelloPro.$button.on('click', function () {
     if (TrelloPro.$settingsPane.is(':visible')) {
       TrelloPro.$settingsPane.fadeOut(150);
@@ -601,7 +603,8 @@ let buildMenu = function () {
       TrelloPro.$settingsPane.fadeIn(150);
     }
   });
-  TrelloPro.$button.prependTo(jQuery('.board-header-btns.mod-right'));
+
+	TrelloPro.$button.prependTo(jQuery('.board-header-btns.mod-right'));
 }
 
 /**
@@ -1058,8 +1061,7 @@ let loadBoard = function () {
 	log('Loading Pro4Trello, board "' + boardId + '"...');
 
   // load settings
-  TrelloPro.settings = TrelloPro.config.defaultSettings;
-	// TODO get 'data_'+TrelloPro.boardId
+  TrelloPro.settings = TrelloPro.config.defaultSettings; // TODO get 'data_'+TrelloPro.boardId
   chrome.storage.sync.get(['defaults',TrelloPro.boardId], function (settings) {
 		// set board-specific settings flag
 		TrelloPro.settingsOverride = settings[TrelloPro.boardId] ? true : false;
@@ -1174,7 +1176,7 @@ let tpro = function(){
 		processCardTitleChange($card.find('.list-card-title'),false);
 	});
 
-	// bind card name processing to card list changes
+	// bind calement adding
 	jQuery(document).bind('DOMNodeInserted', function(e) {
 		if(!TrelloPro.loaded) return;
 		let $card = jQuery(e.target);
@@ -1182,6 +1184,18 @@ let tpro = function(){
 		//processCardTitleChange($card.find('.list-card-title'),true);
 		processCardTitleChange($card.find('.list-card-title'),false);
 	});
+
+	// bind element removal
+	// jQuery(document).bind('DOMNodeInserted', function(e) {
+	// 	if(!TrelloPro.loaded) return;
+	// 	let $target = jQuery(e.target);
+	//
+	// 	// rebuild menu if removed by Trello
+	// 	if($target.attr('id') === 'tpro-menu-button') {
+	// 		buildMenu();
+	// 	}
+	//
+	// });
 
 	// inject special event tracker
 	let $changeTrigger = jQuery('<input type="hidden" id="trpo-history-state-change-trigger" value="" />');
@@ -1227,16 +1241,31 @@ let tpro = function(){
 	// start loading the extension
 	loadBoard();
 
+	// check if menu button is present every 5 seconds
+	(checkMenuButton = function() {
+		if(jQuery('#tpro-menu-button').length == 0) {
+			buildMenu();
+		}
+		setTimeout(checkMenuButton,5000);
+	})();
+
+	// TODO does this work????? ======================================================================== (!)
+	// trigger parsing current cards every 10 seconds
+	(triggerParseCurrentCards = function() {
+		parseCurrentCards();
+		setTimeout(triggerParseCurrentCards,10000);
+	})();
+
 	// trigger data refresh every 30 seconds
-	(refresh = function() {
+	(triggerRefreshData = function() {
 		refreshData('periodical');
-		setTimeout(refresh,30000);
+		setTimeout(triggerRefreshData,30000);
 	})();
 
 	// trigger stats every 7.5 seconds
-	(refresh = function() {
+	(triggerRefreshListStats = function() {
 		refreshListStats();
-		setTimeout(refresh,7500);
+		setTimeout(triggerRefreshListStats,7500);
 	})();
 
 	// // check if a card is opened directly
