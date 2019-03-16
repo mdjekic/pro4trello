@@ -20,7 +20,7 @@ TrelloPro.config = {
 
 	symbols: {
 		label: '<i class="fa fa-tag" aria-hidden="true"></i>',
-		time_entry: '<i class="fa fa-calculator" aria-hidden="true"></i>',
+		time_entry: '<i class="fa fa-hourglass-1" aria-hidden="true"></i>',
 		point: '<i class="fa fa-star" aria-hidden="true"></i>',
 	},
 

@@ -1,12 +1,31 @@
-/* Menu Item */
+/* ============================ TRELLO FOOTER ============================ */
 
-#tpro-filter-trigger.has-notification {
+#tpro-footer {
+  padding: 0px 4px 8px 8px;
+}
+
+/* #tpro-filter-trigger.has-notification {
     -webkit-animation: blinking 1s infinite linear;
 }
 
 @-webkit-keyframes blinking {
   from { opacity: 1; }
   to { opacity: 0.75; }
+} */
+
+/* ============================ LIST MENU ============================ */
+
+.tpro-list-menu li {
+  height: 30px;
+}
+
+.tpro-list-menu input {
+  color: #6b808c !important;
+  float: right !important;
+  font-size: xx-small !important;
+  width: 75px !important;
+  height: 25px !important;
+  margin: auto !important;
 }
 
 /* ============================ TRELLO CARD ============================ */
@@ -42,8 +61,8 @@
   font-weight: bold;
   font-size: 11px;
   border-radius: 3px;
-}
-.tpro-tag.tpro-time-entry i { color: #2c3e50; }
+} 
+.tpro-tag.tpro-time-entry i { color: darkviolet; }
 
 .tpro-tag.tpro-point {
   font-weight: bold;
@@ -67,7 +86,7 @@ i.tpro-priority.critical { color: #c0392b; }
 
 /* ============================ LIST STATS ============================ */
 
-body.tpro-show-list-stats .tpro-list-stats { display: block; }
+body.tpro-show-list-stats .tpro-list-stats { display: inline-block; }
 body.tpro-show-list-stats .list-wrapper { padding-bottom: 25px; }
 body.tpro-show-list-stats .list { border-top-left-radius: 0px; border-top-right-radius: 0px; }
 
@@ -75,10 +94,10 @@ body.tpro-show-list-stats .list { border-top-left-radius: 0px; border-top-right-
   background-color: #E2E4E6;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
-  margin-bottom: 0px;
-  height: 35px;
-  padding-top: 5px;
-  padding-right: 10px;
+  height: 30px;  
+  width: 100%;
+  margin-bottom: -5px;
+  padding-top: 5px;  
   text-align: right;
 }
 
@@ -86,15 +105,19 @@ body.tpro-show-list-stats .list { border-top-left-radius: 0px; border-top-right-
   background-color: whitesmoke;
   box-shadow: 1px 2px 6px 0px #ccc;
   border-radius: 2px;
-  padding: 2px 3px 2px 3px;
+  padding: 2px 4px 2px 4px;
   font-weight: bold;
   font-size: 10px;
-  margin-left: 5px;
+  margin-right: 5px;
+  float: right;
 }
+
+.tpro-list-stats .tpro-stat.count {  float: left; margin-left: 5px; }
 
 .tpro-list-stats .tpro-stat.count i { color: #34495e; }
 .tpro-list-stats .tpro-stat.points i { color: #3498db; }
 .tpro-list-stats .tpro-stat.checklist i { color: #c0392b; }
+.tpro-list-stats .tpro-stat.time-sum i { color: darkviolet; }
 
 .list-wrapper.ui-sortable-helper .tpro-list-stats {
   cursor:-webkit-grabbing;
@@ -106,11 +129,14 @@ body.tpro-show-list-stats .list { border-top-left-radius: 0px; border-top-right-
 }
 
 .tpro-list-stats .progress-bar-wrapper {
-  /*float: left;*/
-	width: 250px;
+  float: left;
+  width: 95%;
   height: 10px;
-  padding: 5px;
-  padding-top: 7px;
+  display: inline-block;
+  padding: 0;  
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-top: -10px;
 }
 
 /*.tpro-list-stats .progress-bar {
