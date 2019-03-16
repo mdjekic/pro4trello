@@ -326,14 +326,17 @@ let rebuildDynamicStyles = function() {
 		}
 
 		// build list enchancements
-		if(TrelloPro.settings.listEnchancements) for(let list in TrelloPro.settings.listEnchancements) {
-			if(TrelloPro.settings.listEnchancements[list]['background']) {
-				css += '.tpro-list-'+list+' .list { background-color: '+TrelloPro.settings.listEnchancements[list]['background']+' !important; } ';
-				css += '.tpro-list-'+list+' .tpro-list-stats { background-color: '+TrelloPro.settings.listEnchancements[list]['background']+' !important; } ';
+		if(TrelloPro.settings.listEnchancements) {
+			css += '.list-card { max-width: 100% !important; } ';
+			for(let list in TrelloPro.settings.listEnchancements) {
+				if(TrelloPro.settings.listEnchancements[list]['background']) {
+					css += '.tpro-list-'+list+' .list { background-color: '+TrelloPro.settings.listEnchancements[list]['background']+' !important; } ';
+					css += '.tpro-list-'+list+' .tpro-list-stats { background-color: '+TrelloPro.settings.listEnchancements[list]['background']+' !important; } ';
+				}
+				if(TrelloPro.settings.listEnchancements[list]['width']) {
+					css += '.tpro-list-'+list+' { width: '+TrelloPro.settings.listEnchancements[list]['width']+' !important; } ';	
+				}			
 			}
-			if(TrelloPro.settings.listEnchancements[list]['width']) {
-				css += '.tpro-list-'+list+' { width: '+TrelloPro.settings.listEnchancements[list]['width']+' !important; } ';	
-			}			
 		}
 	}
 
