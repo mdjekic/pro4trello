@@ -650,6 +650,37 @@ let buildSettingsPane = function () {
 }
 
 /**
+ * Loads the sharing pane
+ */
+let loadSharePane = function() {
+	let $sharePane = jQuery('<div id="tpro-share-container"></div>');
+
+	$sharePane.load(chrome.runtime.getURL("tmpl/share.html"), function () {
+		// determine root paths
+		let imgRoot = chrome.runtime.getURL('img');
+		let root = chrome.runtime.getURL('');
+
+		// handle image sources
+		$sharePane.find('img').each(function(){
+			let $img = jQuery(this);
+			$img.attr('src',$img.attr('src').replace('{$PATH}',imgRoot));
+		});
+
+		// handle links source
+		$sharePane.find('a').each(function(){
+			let $a = jQuery(this);
+			$a.attr('href',$a.attr('href').replace('{$PATH}',root));
+		});
+
+		$sharePane.on('click', function(){
+			$sharePane.remove();
+		});
+
+		$sharePane.appendTo(jQuery('body'));
+	});
+}
+
+/**
  * Builds the TrelloPro footsser
  */
 let buildFooter = function() {
@@ -710,8 +741,7 @@ let buildMenu = function () {
 				window.open('https://chrome.google.com/webstore/detail/pro-for-trello-free-trell/hcjkfaengbcfeckhjgjdldmhjpoglecc/support', '_blank');				
 				break;
 			case 'share':
-				// TODO implement
-				alert('NOT IMPLEMENTED');
+				loadSharePane();
 				break;
 			case 'donate':
 				window.open(chrome.runtime.getURL('docs/donate.html'), '_blank');
@@ -1451,10 +1481,13 @@ let tpro = function(){
 	// introduce dynamic styles
   TrelloPro.$dynamicStyles = jQuery('<style id="tpro-dynamic-css"></style>').appendTo(jQuery('body'));
 
-  // introduce font awesome
-  if(jQuery('#trello-pro-font-awesome').length == 0) {
-    jQuery('body').append('<link id="trello-pro-font-awesome" href="'+chrome.runtime.getURL("lib/font-awesome/css/font-awesome.min.css")+'" rel="stylesheet">');
-  }
+  // CSS
+  if(jQuery('#trello-pro-css-fa').length == 0) {
+    jQuery('body').append('<link id="trello-pro-css-fa" href="'+chrome.runtime.getURL("lib/font-awesome/css/font-awesome.min.css")+'" rel="stylesheet">');
+	}
+	if(jQuery('#trello-pro-css-share').length == 0) {
+    jQuery('body').append('<link id="trello-pro-css-share" href="'+chrome.runtime.getURL("css/share.css")+'" rel="stylesheet">');
+	}
 
 	// bind ESC key
 	jQuery(document).bind('keyup', function(e) {
