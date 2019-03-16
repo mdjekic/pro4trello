@@ -91,7 +91,7 @@ let toggleCssInject = function(name) {
  * @param {object} object
  */
 let log = function(object) {
-	//return;
+	return;
 	console.log(object);
 };
 
@@ -367,9 +367,7 @@ let saveSettings = function() {
  * @param {string} key
  * @param {string} value
  */
-let setListEnchancement = function(list, key, value) {
-	console.log('TODO');
-
+let setListEnchancement = function(list, key, value) {	
 	if(!TrelloPro.settings.listEnchancements) {
 		TrelloPro.settings.listEnchancements = {};
 	}
