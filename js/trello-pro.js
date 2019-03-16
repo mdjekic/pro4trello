@@ -665,22 +665,111 @@ let buildFooter = function() {
 let buildMenu = function () {
 	log('building menu button...');
 
-  TrelloPro.$button = jQuery('<a id="tpro-menu-button" class="board-header-btn calendar-btn" href="#"><span class="icon-sm icon-board board-header-btn-icon"></span><span class="board-header-btn-text u-text-underline">Pro4Trello</span></a>');
-  TrelloPro.$button.on('click', function () {
-    if (TrelloPro.$settingsPane.is(':visible')) {
-      TrelloPro.$settingsPane.fadeOut(150);
-      jQuery('#board').show();
-			TrelloPro.$footer.show();
-    }
-    else {
-      loadSettingsPane();
-			TrelloPro.$settingsPane.fadeIn(150);
-      jQuery('#board').hide();
-			TrelloPro.$footer.hide();
-    }
-  });
+	// prepare popup
+	let $popup = buildPopup('tpro-menu-popup','Pro4Trello Menu');
+	let $list = $popup.find('.pop-over-list').html('');
+	$list.append('<li><a class="js-select light-hover" href="#" data-action="settings"><i class="fa fa-cog" style="color: #0984e3; float:right; padding-top: 3px;"></i>Board Settings</a></li>');
+	$list.append('<li><hr /></li>');
+	$list.append('<li><a class="js-select light-hover" href="#" data-action="about"><i class="fa fa-question-circle" style="color: #2d3436; float:right; padding-top: 3px;"></i>About</a></li>');
+	$list.append('<li><a class="js-select light-hover" href="#" data-action="review"><i class="fa fa-thumbs-up" style="color: #006266; float:right; padding-top: 3px;"></i>Review Extension</a></li>');
+	$list.append('<li><a class="js-select light-hover" href="#" data-action="support"><i class="fa fa-book" style="color: #6c5ce7; float:right; padding-top: 3px;"></i>Get Support</a></li>');
+	$list.append('<li><hr /></li>');
+	$list.append('<li><a class="js-select light-hover" href="#" data-action="share"><i class="fa fa-heart" style="color: #d63031; float:right; padding-top: 3px;"></i>Share the Love</a></li>');
+	$list.append('<li><a class="js-select light-hover" href="#" data-action="donate"><i class="fa fa-beer" style="color: #F79F1F; float:right; padding-top: 3px;"></i>Buy Beer for Author</a></li>');
 
-	TrelloPro.$button.appendTo(TrelloPro.$footer.find('.board-header-btns.mod-right'));
+	let $menuButton = jQuery('<a id="tpro-menu-button" class="board-header-btn calendar-btn" href="#"><span class="icon-sm icon-board board-header-btn-icon"></span><span class="board-header-btn-text u-text-underline">Pro4Trello</span></a>');	
+	$menuButton.on('click', function(e) {
+		let $this = jQuery(this);
+    if($popup.is(':visible')) { $popup.hide(); }
+    else {
+			$popup.css({
+        top: $this.position().top + $this.offset().top + $this.outerHeight(true) - $popup.height(),
+        right: 10
+			}).show();
+		}
+    e.preventDefault();
+    return false;
+	});
+
+	// menu items behavior
+	$list.find('li a').on('click',function(evt){
+		switch(jQuery(this).data('action')) {
+			case 'settings':
+				loadSettingsPane();
+				TrelloPro.$settingsPane.fadeIn(150);
+				jQuery('#board').hide();
+				TrelloPro.$footer.hide();
+				break;
+			case 'about':
+				window.open(chrome.runtime.getURL('docs/about.html'), '_blank');
+				break;
+			case 'review':
+				window.open('https://chrome.google.com/webstore/detail/pro-for-trello-free-trell/hcjkfaengbcfeckhjgjdldmhjpoglecc/reviews', '_blank');
+				break;
+			case 'support':
+				window.open('https://chrome.google.com/webstore/detail/pro-for-trello-free-trell/hcjkfaengbcfeckhjgjdldmhjpoglecc/support', '_blank');				
+				break;
+			case 'share':
+				// TODO implement
+				alert('NOT IMPLEMENTED');
+				break;
+			case 'donate':
+				window.open(chrome.runtime.getURL('docs/donate.html'), '_blank');
+				break;
+		}
+
+		$popup.hide();
+		evt.preventDefault();
+		return false;
+	});
+
+	// $menuButton.on('click', function () {
+  //   if (TrelloPro.$settingsPane.is(':visible')) {
+  //     TrelloPro.$settingsPane.fadeOut(150);
+  //     jQuery('#board').show();
+	// 		TrelloPro.$footer.show();
+  //   }
+  //   else {
+  //     loadSettingsPane();
+	// 		TrelloPro.$settingsPane.fadeIn(150);
+  //     jQuery('#board').hide();
+	// 		TrelloPro.$footer.hide();
+  //   }
+  // });
+
+	$menuButton.appendTo(TrelloPro.$footer.find('.board-header-btns.mod-right'));
+}
+
+/**
+ * Builds a popup
+ * 
+ * @param {string} id 
+ * @param {string} title 
+ */
+let buildPopup = function(id, title){
+  let $popup = jQuery('<div id="'+id+'" class="tpro-popup"></div>');
+  $popup.append(
+    '<div class="pop-over-header js-pop-over-header">'
+      +'<span class="pop-over-header-title">'+title+'</span>'
+      +'<a href="#" class="pop-over-header-close-btn icon-sm icon-close"></a>'
+    +'</div>'
+  );
+  $popup.append(
+    '<div><div class="pop-over-content js-pop-over-content u-fancy-scrollbar js-tab-parent" style="max-height: 673px;">'
+      +'<div>'
+        +'<ul class="pop-over-list">'
+          +'<li><a class="js-select light-hover" href="#">None</a></li>'
+        +'</ul>'
+      +'</div>'
+    +'</div></div>'
+  );
+  $popup.find('a.pop-over-header-close-btn').on('click',function(e){
+    $popup.hide();
+    e.preventDefault();
+    return false;
+	});
+	
+	return $popup.appendTo(jQuery('body'));
 }
 
 /**
@@ -694,7 +783,7 @@ let buildProjectFilter = function () {
   let $menuItem = jQuery('<a id="tpro-header-button-projects" class="board-header-btn" href="#"></a>');
 
   // try to apply pre-loaded filter
-  let $filter = jQuery('<span id="tpro-filter" data-project="" class="board-header-btn-text u-text-underline">None</span>');
+  let $filter = jQuery('<span id="tpro-filter" data-project="" class="board-header-btn-text u-text-underline">Any</span>');
   if(TrelloPro.settings.filters.project) {
     for(let i=0; i<TrelloPro.data.projects.length; i++) {
       if(TrelloPro.settings.filters.project == TrelloPro.data.projects[i].key) {
@@ -707,9 +796,11 @@ let buildProjectFilter = function () {
   $menuItem.append('<span class="board-header-btn-icon icon-sm"><i class="fa fa-bookmark"></i></span>');
   $menuItem.append(jQuery('<span class="board-header-btn-text"><span>Category: </span></span>').append($filter));
 
+	// prepare popup
+	let $popup = buildPopup('tpro-filter-popup','Filter via Category');
+
   // add behaviour
   $menuItem.on('click',function(e){
-    let $popup = jQuery('#tpro-filter-popup');
     let $this = jQuery(this);
     if($popup.is(':visible')) { $popup.hide(); }
     else {
@@ -725,7 +816,7 @@ let buildProjectFilter = function () {
         if(project.key == selected) $a.addClass('disabled');
         $list.append(jQuery('<li></li>').append($a));
       }
-      $list.prepend('<li><a class="js-select light-hover" data-project="" href="#">None</a></li>'); // default "all"
+      $list.prepend('<li><a class="js-select light-hover" data-project="" href="#">Any</a></li>'); // default "all"
 
       // attach filter behaviour
       $list.find('li a').on('click',function(evt){
@@ -762,33 +853,8 @@ let buildProjectFilter = function () {
     e.preventDefault();
     return false;
   });
-
-  // create filter popup
-	jQuery('#tpro-filter-popup').remove();
-  let $filterPopup = jQuery('<div id="tpro-filter-popup" class="tpro-popup"></div>');
-  $filterPopup.append(
-    '<div class="pop-over-header js-pop-over-header">'
-      +'<span class="pop-over-header-title">Filter via Category</span>'
-      +'<a href="#" class="pop-over-header-close-btn icon-sm icon-close"></a>'
-    +'</div>'
-  );
-  $filterPopup.append(
-    '<div><div class="pop-over-content js-pop-over-content u-fancy-scrollbar js-tab-parent" style="max-height: 673px;">'
-      +'<div>'
-        +'<ul class="pop-over-list">'
-          +'<li><a class="js-select light-hover" href="#">All</a></li>'
-        +'</ul>'
-      +'</div>'
-    +'</div></div>'
-  );
-  $filterPopup.find('a.pop-over-header-close-btn').on('click',function(e){
-    $filterPopup.hide();
-    e.preventDefault();
-    return false;
-  });
-
-	TrelloPro.$footer.find('.board-header-btns.mod-left').append($menuItem);
-  jQuery('body').append($filterPopup);
+	
+	TrelloPro.$footer.find('.board-header-btns.mod-left').append($menuItem);  
 }
 
 /**
@@ -802,7 +868,7 @@ let buildLabelsFilter = function () {
   let $menuItem = jQuery('<a id="tpro-header-button-labels" class="board-header-btn" href="#"></a>');
 
   // try to apply pre-loaded filter
-  let $filter = jQuery('<span id="tpro-filter-labels" data-label="" class="board-header-btn-text u-text-underline">None</span>');
+  let $filter = jQuery('<span id="tpro-filter-labels" data-label="" class="board-header-btn-text u-text-underline">Any</span>');
   if(TrelloPro.settings.filters.label) {
     for(let i=0; i<TrelloPro.data.labels.length; i++) {
       if(TrelloPro.settings.filters.label == TrelloPro.data.labels[i].key) {
@@ -815,9 +881,11 @@ let buildLabelsFilter = function () {
   $menuItem.append('<span class="board-header-btn-icon icon-sm"><i class="fa fa-tag"></i></span>');
   $menuItem.append(jQuery('<span class="board-header-btn-text"><span>Tag: </span></span>').append($filter));
 
+	// prepare popup
+	let $popup = buildPopup('tpro-label-popup','Filter via Tag');
+
   // add behaviour
-  $menuItem.on('click',function(e){
-    let $popup = jQuery('#tpro-label-popup');
+  $menuItem.on('click',function(e){    
     let $this = jQuery(this);
     if($popup.is(':visible')) { $popup.hide(); }
     else {
@@ -833,7 +901,7 @@ let buildLabelsFilter = function () {
         if(label.key == selected) $a.addClass('disabled');
         $list.append(jQuery('<li></li>').append($a));
       }
-      $list.prepend('<li><a class="js-select light-hover" data-label="" href="#">None</a></li>'); // default "all"
+      $list.prepend('<li><a class="js-select light-hover" data-label="" href="#">Any</a></li>'); // default "all"
 
       // attach filter behaviour
       $list.find('li a').on('click',function(evt){
@@ -871,32 +939,7 @@ let buildLabelsFilter = function () {
     return false;
   });
 
-  // create filter popup
-	jQuery('#tpro-label-popup').remove();
-  let $filterPopup = jQuery('<div id="tpro-label-popup" class="tpro-popup"></div>');
-  $filterPopup.append(
-    '<div class="pop-over-header js-pop-over-header">'
-      +'<span class="pop-over-header-title">Filter via tag:</span>'
-      +'<a href="#" class="pop-over-header-close-btn icon-sm icon-close"></a>'
-    +'</div>'
-  );
-  $filterPopup.append(
-    '<div><div class="pop-over-content js-pop-over-content u-fancy-scrollbar js-tab-parent" style="max-height: 673px;">'
-      +'<div>'
-        +'<ul class="pop-over-list">'
-          +'<li><a class="js-select light-hover" href="#">All</a></li>'
-        +'</ul>'
-      +'</div>'
-    +'</div></div>'
-  );
-  $filterPopup.find('a.pop-over-header-close-btn').on('click',function(e){
-    $filterPopup.hide();
-    e.preventDefault();
-    return false;
-  });
-
 	TrelloPro.$footer.find('.board-header-btns.mod-left').append($menuItem);
-  jQuery('body').append($filterPopup);
 }
 
 /**
@@ -910,7 +953,7 @@ let buildHashtagsFilter = function () {
   let $menuItem = jQuery('<a id="tpro-header-button-hashtags" class="board-header-btn" href="#"></a>');
 
   // try to apply pre-loaded filter
-  let $filter = jQuery('<span id="tpro-filter-hashtags" data-hashtag="" class="board-header-btn-text u-text-underline">None</span>');
+  let $filter = jQuery('<span id="tpro-filter-hashtags" data-hashtag="" class="board-header-btn-text u-text-underline">Any</span>');
   if(TrelloPro.settings.filters.hashtag) {
     for(let i=0; i<TrelloPro.data.hashtags.length; i++) {
       if(TrelloPro.settings.filters.hashtag == TrelloPro.data.hashtags[i].key) {
@@ -923,9 +966,11 @@ let buildHashtagsFilter = function () {
   $menuItem.append('<span class="board-header-btn-icon icon-sm"><i class="fa fa-hashtag"></i></span>');
   $menuItem.append(jQuery('<span class="board-header-btn-text"><span>Hashtag: </span></span>').append($filter));
 
+	// prepare popup
+	let $popup = buildPopup('tpro-hashtag-popup','Filter via Hashtag');
+
   // add behaviour
   $menuItem.on('click',function(e){
-    let $popup = jQuery('#tpro-hashtag-popup');
     let $this = jQuery(this);
     if($popup.is(':visible')) { $popup.hide(); }
     else {
@@ -941,7 +986,7 @@ let buildHashtagsFilter = function () {
         if(hashtag.key == selected) $a.addClass('disabled');
         $list.append(jQuery('<li></li>').append($a));
       }
-      $list.prepend('<li><a class="js-select light-hover" data-hashtag="" href="#">None</a></li>'); // default "all"
+      $list.prepend('<li><a class="js-select light-hover" data-hashtag="" href="#">Any</a></li>'); // default "all"
 
       // attach filter behaviour
       $list.find('li a').on('click',function(evt){
@@ -977,34 +1022,9 @@ let buildHashtagsFilter = function () {
 
     e.preventDefault();
     return false;
-  });
-
-  // create filter popup
-	jQuery('#tpro-hashtag-popup').remove();
-  let $filterPopup = jQuery('<div id="tpro-hashtag-popup" class="tpro-popup"></div>');
-  $filterPopup.append(
-    '<div class="pop-over-header js-pop-over-header">'
-      +'<span class="pop-over-header-title">Filter via hashtag:</span>'
-      +'<a href="#" class="pop-over-header-close-btn icon-sm icon-close"></a>'
-    +'</div>'
-  );
-  $filterPopup.append(
-    '<div><div class="pop-over-content js-pop-over-content u-fancy-scrollbar js-tab-parent" style="max-height: 673px;">'
-      +'<div>'
-        +'<ul class="pop-over-list">'
-          +'<li><a class="js-select light-hover" href="#">All</a></li>'
-        +'</ul>'
-      +'</div>'
-    +'</div></div>'
-  );
-  $filterPopup.find('a.pop-over-header-close-btn').on('click',function(e){
-    $filterPopup.hide();
-    e.preventDefault();
-    return false;
-  });
+  });  
 
 	TrelloPro.$footer.find('.board-header-btns.mod-left').append($menuItem);
-  jQuery('body').append($filterPopup);
 }
 
 /**
@@ -1029,9 +1049,11 @@ let buildListsFilter = function () {
   $menuItem.append('<span class="board-header-btn-icon icon-sm icon-list"></span>');
   $menuItem.append(jQuery('<span class="board-header-btn-text"><span>Lists: </span></span>').append($filter));
 
+	// prepare popup
+	let $popup = buildPopup('tpro-listfilter-popup','Show/Hide Lists');
+	
 	// add behaviour
   $menuItem.on('click',function(e){
-    let $popup = jQuery('#tpro-listfilter-popup');
     let $this = jQuery(this);
     if($popup.is(':visible')) { $popup.hide(); }
     else {
@@ -1103,33 +1125,10 @@ let buildListsFilter = function () {
     e.preventDefault();
     return false;
   });
-
-	// create filter popup
-	jQuery('#tpro-listfilter-popup').remove();
-  let $filterPopup = jQuery('<div id="tpro-listfilter-popup" class="tpro-popup"></div>');
-  $filterPopup.append(
-    '<div class="pop-over-header js-pop-over-header">'
-      +'<span class="pop-over-header-title">Show/Hide Lists</span>'
-      +'<a href="#" class="pop-over-header-close-btn icon-sm icon-close"></a>'
-    +'</div>'
-  );
-  $filterPopup.append(
-    '<div><div class="pop-over-content js-pop-over-content u-fancy-scrollbar js-tab-parent" style="max-height: 673px;">'
-      +'<div>'
-        +'<ul class="checklist-items-list"></ul>'
-      +'</div>'
-    +'</div></div>'
-  );
-  $filterPopup.find('a.pop-over-header-close-btn').on('click',function(e){
-    $filterPopup.hide();
-    e.preventDefault();
-    return false;
-  });
-	
+		
 	TrelloPro.$footer.find('.board-header-btns.mod-left')
 		.append($menuItem)
 		.append('<span class="board-header-btn-divider"></span>');
-  jQuery('body').append($filterPopup);
 }
 
 /**
