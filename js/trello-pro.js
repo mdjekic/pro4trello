@@ -91,7 +91,7 @@ let toggleCssInject = function(name) {
  * @param {object} object
  */
 let log = function(object) {
-	return;
+	//return;
 	console.log(object);
 };
 
@@ -581,7 +581,7 @@ let refreshListsAndStats = function() {
  * Refreshes list filter rendering
  */
 let refreshListFilter = function() {
-	let shown = TrelloPro.lists.length - TrelloPro.settings.filters.lists.length;
+	let shown = TrelloPro.lists.length - (TrelloPro.settings.filters.lists ? TrelloPro.settings.filters.lists.length : 0);
 	jQuery('#tpro-lists-filter').text(shown + '/' + TrelloPro.lists.length);
 }
 
@@ -1579,7 +1579,7 @@ let tpro = function(){
 
 	// react on card title changes
 	jQuery(document).on('DOMSubtreeModified', '.list-card-title', function (e) {
-		if(!TrelloPro.loaded) return;
+		//if(!TrelloPro.loaded) return;
 		let $card = jQuery(this).parents('.list-card');
 		if ($card.hasClass('placeholder') || $card.css('position') == 'absolute') return;
 		processCardTitleChange($card.find('.list-card-title'),false);

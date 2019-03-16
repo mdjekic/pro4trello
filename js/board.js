@@ -1,42 +1,41 @@
 var boardId;
+var boardSettings;
 
 function updateSettings() {
-  let settings = {};
-
   // handle checkboxes
   $('input[type="checkbox"]').each(function () {
     let checkbox = jQuery(this);
-    settings[checkbox.attr('name')] = checkbox.prop('checked');
+    boardSettings[checkbox.attr('name')] = checkbox.prop('checked');
   });
 
   // handle text inputs
   $('textarea,input[type="text"]').each(function () {
     let textarea = jQuery(this);
-    settings[textarea.attr('name')] = textarea.val();
+    boardSettings[textarea.attr('name')] = textarea.val();
   });
 
   // handle select/radio buttons
   $('.radio-group').each(function () {
     let radio = jQuery(this).find('input').filter(':checked');
-    settings[radio.attr('name')] = radio.val();
+    boardSettings[radio.attr('name')] = radio.val();
   });
 
   let storage = {};
-  storage[boardId] = settings;
+  storage[boardId] = boardSettings;
   chrome.storage.sync.set(storage);
 }
 
 function loadSettings() {
   boardId = window.location.hash.replace('#b=','');
   chrome.storage.sync.get(['defaults',boardId], function (globalSettings) {
-    var settings = globalSettings[boardId];
+    boardSettings = globalSettings[boardId];
 
-    if(settings) {
-      for (let key in settings) {
+    if(boardSettings) {
+      for (let key in boardSettings) {
         // try checkbox
         let checkbox = $('input[type="checkbox"][name="' + key + '"]');
         if (checkbox.length != 0) {
-          if (settings[key]) {
+          if (boardSettings[key]) {
             checkbox.attr('checked', true);
             checkbox.parents('.checklist-item').addClass('checklist-item-state-complete');
           }
@@ -50,17 +49,19 @@ function loadSettings() {
         // try textarea, text input
         let textarea = $('[name="' + key + '"]');
         if (textarea.length != 0) {
-          textarea.val(settings[key]);
+          textarea.val(boardSettings[key]);
           continue;
         }
 
         // try radio
-        let radio = $('input[type="radio"][name="' + key + '"][value="' + settings[key] + '"]');
+        let radio = $('input[type="radio"][name="' + key + '"][value="' + boardSettings[key] + '"]');
         if(radio.length != 0) {
           radio.attr('checked',true);
           continue;
         }
       }
+    } else {
+      boardSettings = {};
     }
   });
 }
