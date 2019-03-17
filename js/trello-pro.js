@@ -12,6 +12,7 @@ TrelloPro.settingsOverride = false;
 
 TrelloPro.data = {
 	lists: [],
+	priorities: [],
 	projects: [],
 	labels: [],
 	hashtags: []
@@ -180,17 +181,16 @@ let processCardTitleChange = function ($title,refreshData) {
 	    if (TrelloPro.settings['parse-priority-marks']) {
 	      let priorityCount = (html.match(/\!/g) || []).length;
 	      if(priorityCount > 0) {
-	        let priority = 'critical';
+	        let priority = 'low';
 	        switch(priorityCount) {
-	          case 1: priority = 'medium'; break;
-	          case 2: priority = 'high'; break;
+	          case 2: priority = 'medium'; break;
+	          case 3: priority = 'high'; break;
 	        }
 	        filterAttributes.push('tpro-priority-'+priority);
 	        html = html.replace(/\!/g,'') + '<span class="badge tpro-tag tpro-priority"><i class="fa fa-exclamation-triangle tpro-priority ' + priority + '" aria-hidden="true"></i></span>';
 	      }
 	      else {
-	        // normal priority
-	        filterAttributes.push('tpro-priority-normal');
+	        filterAttributes.push('tpro-priority-no');
 	      }
 	    }
 
@@ -288,6 +288,12 @@ let rebuildDynamicStyles = function() {
 
 	if(TrelloPro.loaded) {
 
+		// build priority filters
+		if(TrelloPro.settings['parse-priority-marks'] && TrelloPro.settings.filters.priority) {
+			css += '#tpro-header-button-priority { background-color: #2c3e50; } ';
+			css += '.list-card:not(.js-composer):not(.tpro-priority-' + TrelloPro.settings.filters.priority + ') { display: none; } ';			
+		}
+		
 		// build project filters
 		if(TrelloPro.settings['parse-projects'] && TrelloPro.settings.filters.project) {
 			// apply only if project exists
@@ -410,6 +416,14 @@ let buildData = function() {
 	// just a sorting function
   let sorter = function(a,b) { return a.key.localeCompare(b.key); }
 
+	// form priorities
+	let priorities = [
+		{ key: 'no', value: 'No Priority', cardCount: jQuery('.tpro-priority-no').length },
+		{ key: 'low', value: 'Low Priority', cardCount: jQuery('.tpro-priority-low').length },
+		{ key: 'medium', value: 'Medium Priority', cardCount: jQuery('.tpro-priority-medium').length },
+		{ key: 'high', value: 'High Priority', cardCount: jQuery('.tpro-priority-high').length }
+	];
+	
   // get all projects
 	let projects = [];
 	let keys = [];
@@ -429,11 +443,7 @@ let buildData = function() {
 
 	// get special "no project" project
 	let $noProject = jQuery('.tpro-project-noproject');
-	if($noProject.length > 0) {
-		projects.unshift({ key: 'noproject', value: 'Uncategorized', cardCount: $noProject.length });
-	}
-
-	// mdjekic TODO jQuery('.tpro-noproject');
+	projects.unshift({ key: 'noproject', value: 'Uncategorized', cardCount: $noProject.length });
 
   // get all labels
   let labels = [];
@@ -471,6 +481,7 @@ let buildData = function() {
   }
   hashtags.sort(sorter);
 
+	TrelloPro.data.priorities = priorities;
 	TrelloPro.data.projects = projects;
 	TrelloPro.data.labels = labels;
 	TrelloPro.data.hashtags = hashtags;
@@ -784,20 +795,6 @@ let buildMenu = function () {
 		return false;
 	});
 
-	// $menuButton.on('click', function () {
-  //   if (TrelloPro.$settingsPane.is(':visible')) {
-  //     TrelloPro.$settingsPane.fadeOut(150);
-  //     jQuery('#board').show();
-	// 		TrelloPro.$footer.show();
-  //   }
-  //   else {
-  //     loadSettingsPane();
-	// 		TrelloPro.$settingsPane.fadeIn(150);
-  //     jQuery('#board').hide();
-	// 		TrelloPro.$footer.hide();
-  //   }
-  // });
-
 	$menuButton.appendTo(TrelloPro.$footer.find('.board-header-btns.mod-right'));
 }
 
@@ -831,6 +828,90 @@ let buildPopup = function(id, title){
 	});
 	
 	return $popup.appendTo(jQuery('body'));
+}
+
+/**
+ * Builds the Priority Filter
+ */
+let buildPriorityFilter = function () {
+	if(!TrelloPro.settings['parse-priority-marks']) return;
+	log('building priority filter...');
+
+  // create menu item
+  let $menuItem = jQuery('<a id="tpro-header-button-priority" class="board-header-btn" href="#"></a>');
+
+  // try to apply pre-loaded filter
+  let $filter = jQuery('<span id="tpro-filter-priority" data-priority="" class="board-header-btn-text u-text-underline">Any</span>');
+  if(TrelloPro.settings.filters.priority) {
+    for(let i=0; i<TrelloPro.data.priorities.length; i++) {
+      if(TrelloPro.settings.filters.priority == TrelloPro.data.priorities[i].key) {
+        $filter.attr('data-priority',TrelloPro.settings.filters.priority);
+        $filter.text(TrelloPro.data.priorities[i].value + ' ('+TrelloPro.data.priorities[i].cardCount+')');
+        break;
+      }
+    }
+  }
+  $menuItem.append('<span class="board-header-btn-icon icon-sm"><i class="fa fa-exclamation-triangle"></i></span>');
+  $menuItem.append(jQuery('<span class="board-header-btn-text"><span>Priority: </span></span>').append($filter));
+
+	// prepare popup
+	let $popup = buildPopup('tpro-priority-popup','Filter via Priority');
+
+  // add behaviour
+  $menuItem.on('click',function(e){
+    let $this = jQuery(this);
+    if($popup.is(':visible')) { $popup.hide(); }
+    else {
+      // render project data
+      let $list = $popup.find('ul.pop-over-list').html("");
+      let selected = jQuery('#tpro-filter-priority').attr('data-priority');
+      for(priority of TrelloPro.data.priorities) {
+        let $a = jQuery(
+          '<a class="js-select light-hover" data-priority="'+priority.key+'" href="#">'
+            +priority.value+' <span>('+priority.cardCount+')</span>'
+          +'</a>'
+        );
+        if(priority.key == selected) $a.addClass('disabled');
+        $list.append(jQuery('<li></li>').append($a));
+      }
+      $list.prepend('<li><a class="js-select light-hover" data-priority="" href="#">Any</a></li>'); // default "all"
+
+      // attach filter behaviour
+      $list.find('li a').on('click',function(evt){
+        let $this = jQuery(this);
+
+        // update filter in menu
+        $filter.attr('data-priority',$this.data().priority);
+        $filter.text($this.text());
+
+        // update filters
+        let priority = $this.data().priority;
+        TrelloPro.settings.filters.priority = (priority != "") ? priority : false;
+        rebuildDynamicStyles();
+        saveSettings();
+				setTimeout(function(){
+					refreshData('filter');
+					refreshListsAndStats();
+				},54);
+
+        $popup.hide();
+
+        evt.preventDefault();
+        return false;
+      });
+
+      // show popup
+			$popup.css({
+        top: $this.position().top + $this.offset().top + $this.outerHeight(true) - $popup.height(),
+        left: $this.offset().left
+      }).show();
+    }
+
+    e.preventDefault();
+    return false;
+  });
+	
+	TrelloPro.$footer.find('.board-header-btns.mod-left').append($menuItem);  
 }
 
 /**
@@ -1481,11 +1562,11 @@ let loadBoard = function () {
 					TrelloPro.loaded = true;
 					buildFooter();
 					refreshListsAndStats();					
-					buildListsFilter();					
+					buildListsFilter();		
+					buildPriorityFilter();			
 					buildProjectFilter();
 					buildLabelsFilter();
 					buildHashtagsFilter();
-					//buildLabelsFilter();
 					rebuildDynamicStyles();
 					buildSettingsPane();
 					buildMenu();

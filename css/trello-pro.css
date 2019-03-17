@@ -1,7 +1,8 @@
 /* ============================ TRELLO FOOTER ============================ */
 
 #tpro-footer {
-  padding: 0px 4px 8px 8px;
+  padding: 4px;
+  background-color: rgba(0,0,0,0.15);
 }
 
 /* #tpro-filter-trigger.has-notification {
@@ -74,9 +75,9 @@
 .tpro-tag.tpro-point i { color: #3498db; }
 
 /* Priorities */
-i.tpro-priority.medium { color: #f1c40f; }
-i.tpro-priority.high { color: #e67e22; }
-i.tpro-priority.critical { color: #c0392b; }
+i.tpro-priority.low { color: #f1c40f; }
+i.tpro-priority.medium { color: #e67e22; }
+i.tpro-priority.high { color: #c0392b; }
 
 /* Card borders based on priorities */
 .list-card.tpro-priority-normal { border-left: 3px solid #95a5a6; }
