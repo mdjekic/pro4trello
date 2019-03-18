@@ -19,7 +19,6 @@ You can now turn on and use the following new components within cards:
 [1.5] Points -  will be shown below card name with a star icon to enable adding points to cards (Scrum anyone?).
 [1.6] Card Numbers - will be shown as bold blue text to make it easy for you to reference cards for yourself or between team members.
 [1.7] Full-sized Trello Labels - turns those colored lines into full labels that fit perfectly on the card and really stand them out. You can choose between several label sizes.
-[1.8] Hide "Activity" entries - you can completely hide that annoying Activity window that made your cards look unnecessarily long and cluttered.
 [1.8] Simple Markup - you can write simple markup in your card titles making it easy to emphasize things visually.
 [1.9] Hashtags - unlike tags, they will be shown inline within card title, colored blue. You can filter cards per hashtag.
 
@@ -40,8 +39,8 @@ Pro for Trello will make the following changes:
 You can use the following enhancements for your lists:
 
 [2.1] Show/hide lists - you can hide any list on your board (without archiving it) to unclutter your view.
-[2.2] List Stats - you can now have a status bar on the top of your lists that displays the no. of cards, sum of points, sum of time entries and the status of checklists (tasks).
-[2.3] Progress Bar - list stats can also include a progress bar for checklists.
+[2.2] List stats - you can now have a status bar on the top of your lists that displays the no. of cards, sum of points, sum of time entries and the status of checklists (tasks).
+[2.3] Progress bar - list stats can also include a progress bar for checklists.
 [2.4] Custom background color - you can make lists more prominent and visually better by adding a custom color.
 [2.5] Custom list width - you can manipulate the width of any particular list.
 
@@ -52,13 +51,15 @@ You can also activate the following enhancements for any board:
 [3.1] Custom background image - just paste the URL of the image you want rendered as a background on your board and you're all set.
 [3.2] Compact boards - you can make your boards more compact, a very useful feature especially when you have a lot of cards.
 [3.3] Beautiful card descriptions - you can make card descriptions significantly more readable.
-[3.4] Hide "Add a list..." input - you can now hide that unused input that just takes up space and even forces the bottom scroll bar to appear.
+[3.4] Hide "Add a list..." - you can now hide that unused input that just takes up space and even forces the bottom scroll bar to appear.
 [3.5] Custom CSS - if you know what you're doing and you know a way to make Trello look even better, this one's for you. Just paste your CSS and save, it will be loaded to your board.
 
 [4] ADDED VALUE
 
+Pro for Trello is built to be useful and fully customizable so you get:
+
 [4.1] Global configuration for all boards - you can configure enhancements that will be applied by default to all your Trello boards.
-[4.2] Custom configuration for specific boards - you can configure each specific board (overrides global configuration).
+[4.2] Per-board configuration - you can configure each specific board (overrides global configuration).
 [4.3] Exporting board configuration - you can easilly share configuration between boards and accross teams.
 
 [5] PERMISSIONS
