@@ -28,6 +28,7 @@ TrelloPro.refreshing = false;
 // Utility
 // -----------------------------------------------------------------------------
 
+/// https://stackoverflow.com/questions/10073699/pad-a-number-with-leading-zeros-in-javascript
 /**
  * Sums 2 time entries
  *
@@ -35,6 +36,12 @@ TrelloPro.refreshing = false;
  * @param {string} endTime
  * @return {string}
  */
+sumTimeEntriesPad = function (n, width, z) {
+	z = z || '0';
+	n = n + '';
+	return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+}
+
 let sumTimeEntries = function(startTime, endTime) {
   let times = [0, 0];
   let max = times.length;
@@ -57,7 +64,10 @@ let sumTimeEntries = function(startTime, endTime) {
     minutes -= 60 * h;
   }
 
-  return ('0' + hours) + ':' + ('0' + minutes);
+  let hours_str = (hours >= 100)? ''+hours : sumTimeEntriesPad(hours, 2);  
+  let minutes_str = (minutes >= 100)? ''+minutes : sumTimeEntriesPad(minutes, 2);
+
+  return hours_str + ':' + minutes_str;
 }
 
 /**
