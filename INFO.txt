@@ -24,12 +24,13 @@ You can now turn on and use the following new components within cards:
 
 To enhance cards, use the following format in card titles:
 
-Category | Card Title [tag] {time-entry} |points| #hashtag !
+Category | Card Title [tag] {time-entry} $price-entry$ |points| #hashtag !
 
 Pro for Trello will make the following changes:
 • render "Category |" as card category
 • render "[tag]" as an inline tag
 • render "{time-entry}" as a time entry
+• render "$price-entry$" as a price entry
 • render "|points|" as card points
 • render "#hashtag" as an inline hashtag
 • render "!!" as medium priority
