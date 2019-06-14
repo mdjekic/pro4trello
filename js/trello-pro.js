@@ -57,7 +57,7 @@ let sumTimeEntries = function(startTime, endTime) {
     minutes -= 60 * h;
   }
 
-  return ('0' + hours) + ':' + ('0' + minutes);
+  return ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2);
 }
 
 /**
