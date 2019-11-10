@@ -9,6 +9,7 @@ TrelloPro.boardTitle = null;
 
 TrelloPro.settings = {};
 TrelloPro.settingsOverride = false;
+TrelloPro.autoHideFooter = false;
 
 TrelloPro.data = {
 	lists: [],
@@ -676,7 +677,7 @@ let buildSettingsPane = function () {
 					saveSettings();
           TrelloPro.$settingsPane.fadeOut(150);
 					jQuery('#board').show();
-					TrelloPro.$footer.show();
+					//TrelloPro.$footer.show();
         });
 
         // attach save button behaviour
@@ -733,6 +734,9 @@ let buildFooter = function() {
 
 	TrelloPro.$footer = jQuery('<div id="tpro-footer" class="u-clearfix"><div class="board-header-btns mod-left"></div><div class="board-header-btns mod-right"></div></div>');
 	TrelloPro.$footer.appendTo(jQuery('.board-main-content'));
+	if(TrelloPro.autoHideFooter) {
+		TrelloPro.$footer.hide();
+	}
 }
 
 /**
@@ -744,6 +748,7 @@ let buildMenu = function () {
 	// prepare popup
 	let $popup = buildPopup('tpro-menu-popup','Pro4Trello Menu');
 	let $list = $popup.find('.pop-over-list').html('');
+	let $toggleFooter = jQuery('<input id="tpro-toggle-hide-footer" type="checkbox" value="1" />')
 	$list.append('<li><a class="js-select light-hover" href="#" data-action="settings"><i class="fa fa-cog" style="color: #0984e3; float:right; padding-top: 3px;"></i>Board Settings</a></li>');
 	$list.append('<li><a class="js-select light-hover" href="#" data-action="global-settings"><i class="fa fa-cogs" style="color: #e17055; float:right; padding-top: 3px;"></i>Global Settings</a></li>');
 	$list.append('<li><a class="js-select light-hover" href="#" data-action="help-videos"><i class="fa fa-video-camera" style="color: #e84393; float:right; padding-top: 3px;"></i>Help Videos</a></li>');
@@ -754,6 +759,8 @@ let buildMenu = function () {
 	$list.append('<li><hr /></li>');
 	$list.append('<li><a class="js-select light-hover" href="#" data-action="share"><i class="fa fa-heart" style="color: #d63031; float:right; padding-top: 3px;"></i>Share the Love</a></li>');
 	$list.append('<li><a class="js-select light-hover" href="#" data-action="donate" style="background-color: #ffeaa7"><i class="fa fa-beer" style="color: #F79F1F; float:right; padding-top: 3px;"></i>Donate to Author</a></li>');
+	$popup.append('<hr />');
+	$popup.append(jQuery('<div style="text-align:center"></div>').append(jQuery('<label for="tpro-toggle-hide-footer">Auto-hide footer</label>').prepend($toggleFooter)));
 
 	let $menuButton = jQuery('<a id="tpro-menu-button" class="board-header-btn calendar-btn" href="#"><span class="icon-sm icon-board board-header-btn-icon"></span><span class="board-header-btn-text u-text-underline">Pro4Trello</span></a>');
 	$menuButton.on('click', function(e) {
@@ -804,6 +811,18 @@ let buildMenu = function () {
 		$popup.hide();
 		evt.preventDefault();
 		return false;
+	});
+
+	// toggle footer auto-hide toggle behavior
+	if(TrelloPro.autoHideFooter) {
+		$toggleFooter.attr('checked',true);
+	}
+	$toggleFooter.on('change',function(e){
+		TrelloPro.autoHideFooter = $toggleFooter.is(':checked');
+		if(!TrelloPro.autoHideFooter) {
+			TrelloPro.$footer.show();
+		}
+		store('autohide',TrelloPro.autoHideFooter);
 	});
 
 	$menuButton.appendTo(TrelloPro.$footer.find('.board-header-btns.mod-right'));
@@ -1578,7 +1597,7 @@ let loadBoard = function () {
 
   // load settings
   TrelloPro.settings = TrelloPro.config.defaultSettings; // TODO get 'data_'+TrelloPro.boardId
-  chrome.storage.sync.get(['defaults',TrelloPro.boardId], function (settings) {
+  chrome.storage.sync.get(['defaults',TrelloPro.boardId,'autohide'], function (settings) {
 		log('[loaded board settings]');
 
 		// set board-specific settings flag
@@ -1587,6 +1606,12 @@ let loadBoard = function () {
 		// get defaults and board-specific settings
 		let defaults = settings['defaults'] ? settings['defaults'] : {};
 		let boardSettings = settings[TrelloPro.boardId] ? settings[TrelloPro.boardId] : {};
+
+		// set auto-hide settings
+		TrelloPro.autoHideFooter = settings['autohide'];
+		if(typeof TrelloPro.autoHideFooter !== 'boolean') {
+			TrelloPro.autoHideFooter = false;
+		}
 
 		// merge settings
 		TrelloPro.settings = jQuery.extend({}, TrelloPro.settings, defaults);
@@ -1724,6 +1749,18 @@ let tpro = function(){
 		if (!$card.hasClass('list-card') || $card.hasClass('placeholder') || $card.css('position') == 'absolute') return;
 		//processCardTitleChange($card.find('.list-card-title'),true);
 		processCardTitleChange($card.find('.list-card-title'),false);
+	});
+
+	// bind mouse movements for show/hide footer
+	jQuery('body').on('mousemove',function(e) {
+		if(!TrelloPro.loaded) return;
+		if(!TrelloPro.autoHideFooter) return;
+	  if(window.innerHeight - e.pageY >= 44) {
+			if(TrelloPro.$footer.is(':visible')) TrelloPro.$footer.hide();
+		}
+		else {
+			if(!TrelloPro.$footer.is(':visible')) TrelloPro.$footer.show();
+		}
 	});
 
 	// bind element removal
