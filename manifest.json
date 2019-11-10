@@ -30,7 +30,8 @@
         "tmpl/*",
         "docs/*",
         "lib/*",
-        "board.html"
+        "board.html",
+        "options.html"
     ],
 
     "background": {

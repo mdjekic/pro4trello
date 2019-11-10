@@ -254,7 +254,7 @@ let processCardTitleChange = function ($title,refreshData) {
  *
  * @param {jQuery} $list
  */
-let processListTitleChange = function($list) {	
+let processListTitleChange = function($list) {
 	let oldId = $list.data('tpro-list');
 	refreshListsAndStats();
 	let newId = $list.data('tpro-list');
@@ -291,16 +291,16 @@ let rebuildDynamicStyles = function() {
 		// build priority filters
 		if(TrelloPro.settings['parse-priority-marks'] && TrelloPro.settings.filters.priority) {
 			css += '#tpro-header-button-priority { background-color: #2c3e50; } ';
-			css += '.list-card:not(.js-composer):not(.tpro-priority-' + TrelloPro.settings.filters.priority + ') { display: none; } ';			
+			css += '.list-card:not(.js-composer):not(.tpro-priority-' + TrelloPro.settings.filters.priority + ') { display: none; } ';
 		}
-		
+
 		// build project filters
 		if(TrelloPro.settings['parse-projects'] && TrelloPro.settings.filters.project) {
 			// apply only if project exists
 			if(TrelloPro.data.projects.map(function(project){ return project.key; }).indexOf(TrelloPro.settings.filters.project) > -1) {
 				css += '#tpro-header-button-projects { background-color: #2c3e50; } ';
 				css += '.list-card:not(.js-composer):not(.tpro-project-' + TrelloPro.settings.filters.project + ') { display: none; } ';
-			}				
+			}
 		}
 
 		// build label filters
@@ -309,7 +309,7 @@ let rebuildDynamicStyles = function() {
 			if(TrelloPro.data.labels.map(function(label){ return label.key; }).indexOf(TrelloPro.settings.filters.label) > -1) {
 				css += '#tpro-header-button-labels { background-color: #2c3e50; } ';
 				css += '.list-card:not(.js-composer):not(.tpro-label-' + TrelloPro.settings.filters.label + ') { display: none; } ';
-			}				
+			}
 		}
 
 		// build hashtag filters
@@ -318,7 +318,7 @@ let rebuildDynamicStyles = function() {
 			if(TrelloPro.data.hashtags.map(function(hashtag){ return hashtag.key; }).indexOf(TrelloPro.settings.filters.hashtag) > -1) {
 				css += '#tpro-header-button-hashtags { background-color: #2c3e50; } ';
 				css += '.list-card:not(.js-composer):not(.tpro-hashtag-' + TrelloPro.settings.filters.hashtag + ') { display: none; } ';
-			}				
+			}
 		}
 
 		// build list filters
@@ -340,8 +340,8 @@ let rebuildDynamicStyles = function() {
 					css += '.tpro-list-'+list+' .tpro-list-stats { background-color: '+TrelloPro.settings.listEnchancements[list]['background']+' !important; } ';
 				}
 				if(TrelloPro.settings.listEnchancements[list]['width']) {
-					css += '.tpro-list-'+list+' { width: '+TrelloPro.settings.listEnchancements[list]['width']+' !important; } ';	
-				}			
+					css += '.tpro-list-'+list+' { width: '+TrelloPro.settings.listEnchancements[list]['width']+' !important; } ';
+				}
 			}
 		}
 	}
@@ -371,12 +371,12 @@ let saveSettings = function() {
 
 /**
  * Sets list enchancement in settings
- * 
+ *
  * @param {string} list
  * @param {string} key
  * @param {string} value
  */
-let setListEnchancement = function(list, key, value) {	
+let setListEnchancement = function(list, key, value) {
 	if(!TrelloPro.settings.listEnchancements) {
 		TrelloPro.settings.listEnchancements = {};
 	}
@@ -392,7 +392,7 @@ let setListEnchancement = function(list, key, value) {
 
 /**
  * Gets list enchancement from settings
- * 
+ *
  * @param {string} list
  * @param {string} key
  */
@@ -423,7 +423,7 @@ let buildData = function() {
 		{ key: 'medium', value: 'Medium Priority', cardCount: jQuery('.tpro-priority-medium').length },
 		{ key: 'high', value: 'High Priority', cardCount: jQuery('.tpro-priority-high').length }
 	];
-	
+
   // get all projects
 	let projects = [];
 	let keys = [];
@@ -463,7 +463,7 @@ let buildData = function() {
   }
   labels.sort(sorter);
 
-	// get all hashtags	
+	// get all hashtags
 	let hashtags = [];
 	keys = [];
   let $hashtags = jQuery('.tpro-hashtag');
@@ -742,15 +742,16 @@ let buildMenu = function () {
 	let $popup = buildPopup('tpro-menu-popup','Pro4Trello Menu');
 	let $list = $popup.find('.pop-over-list').html('');
 	$list.append('<li><a class="js-select light-hover" href="#" data-action="settings"><i class="fa fa-cog" style="color: #0984e3; float:right; padding-top: 3px;"></i>Board Settings</a></li>');
+	$list.append('<li><a class="js-select light-hover" href="#" data-action="global-settings"><i class="fa fa-cogs" style="color: #6c5ce7; float:right; padding-top: 3px;"></i>Global Settings</a></li>');
 	$list.append('<li><hr /></li>');
 	$list.append('<li><a class="js-select light-hover" href="#" data-action="about"><i class="fa fa-question-circle" style="color: #2d3436; float:right; padding-top: 3px;"></i>About</a></li>');
 	$list.append('<li><a class="js-select light-hover" href="#" data-action="review"><i class="fa fa-thumbs-up" style="color: #006266; float:right; padding-top: 3px;"></i>Review Extension</a></li>');
 	$list.append('<li><a class="js-select light-hover" href="#" data-action="support"><i class="fa fa-book" style="color: #6c5ce7; float:right; padding-top: 3px;"></i>Get Support</a></li>');
 	$list.append('<li><hr /></li>');
 	$list.append('<li><a class="js-select light-hover" href="#" data-action="share"><i class="fa fa-heart" style="color: #d63031; float:right; padding-top: 3px;"></i>Share the Love</a></li>');
-	$list.append('<li><a class="js-select light-hover" href="#" data-action="donate"><i class="fa fa-beer" style="color: #F79F1F; float:right; padding-top: 3px;"></i>Buy Beer for Author</a></li>');
+	$list.append('<li><a class="js-select light-hover" href="#" data-action="donate"><i class="fa fa-beer" style="color: #F79F1F; float:right; padding-top: 3px;"></i>Donate to Author</a></li>');
 
-	let $menuButton = jQuery('<a id="tpro-menu-button" class="board-header-btn calendar-btn" href="#"><span class="icon-sm icon-board board-header-btn-icon"></span><span class="board-header-btn-text u-text-underline">Pro4Trello</span></a>');	
+	let $menuButton = jQuery('<a id="tpro-menu-button" class="board-header-btn calendar-btn" href="#"><span class="icon-sm icon-board board-header-btn-icon"></span><span class="board-header-btn-text u-text-underline">Pro4Trello</span></a>');
 	$menuButton.on('click', function(e) {
 		let $this = jQuery(this);
     if($popup.is(':visible')) { $popup.hide(); }
@@ -773,6 +774,9 @@ let buildMenu = function () {
 				jQuery('#board').hide();
 				TrelloPro.$footer.hide();
 				break;
+			case 'global-settings':
+				let w = window.open(chrome.runtime.getURL('options.html'), '_blank');
+				break;
 			case 'about':
 				window.open(chrome.runtime.getURL('docs/about.html'), '_blank');
 				break;
@@ -780,7 +784,7 @@ let buildMenu = function () {
 				window.open('https://chrome.google.com/webstore/detail/pro-for-trello-free-trell/hcjkfaengbcfeckhjgjdldmhjpoglecc/reviews', '_blank');
 				break;
 			case 'support':
-				window.open('https://chrome.google.com/webstore/detail/pro-for-trello-free-trell/hcjkfaengbcfeckhjgjdldmhjpoglecc/support', '_blank');				
+				window.open('https://chrome.google.com/webstore/detail/pro-for-trello-free-trell/hcjkfaengbcfeckhjgjdldmhjpoglecc/support', '_blank');
 				break;
 			case 'share':
 				loadSharePane();
@@ -800,9 +804,9 @@ let buildMenu = function () {
 
 /**
  * Builds a popup
- * 
- * @param {string} id 
- * @param {string} title 
+ *
+ * @param {string} id
+ * @param {string} title
  */
 let buildPopup = function(id, title){
   let $popup = jQuery('<div id="'+id+'" class="tpro-popup"></div>');
@@ -826,7 +830,7 @@ let buildPopup = function(id, title){
     e.preventDefault();
     return false;
 	});
-	
+
 	return $popup.appendTo(jQuery('body'));
 }
 
@@ -910,8 +914,8 @@ let buildPriorityFilter = function () {
     e.preventDefault();
     return false;
   });
-	
-	TrelloPro.$footer.find('.board-header-btns.mod-left').append($menuItem);  
+
+	TrelloPro.$footer.find('.board-header-btns.mod-left').append($menuItem);
 }
 
 /**
@@ -995,8 +999,8 @@ let buildProjectFilter = function () {
     e.preventDefault();
     return false;
   });
-	
-	TrelloPro.$footer.find('.board-header-btns.mod-left').append($menuItem);  
+
+	TrelloPro.$footer.find('.board-header-btns.mod-left').append($menuItem);
 }
 
 /**
@@ -1027,7 +1031,7 @@ let buildLabelsFilter = function () {
 	let $popup = buildPopup('tpro-label-popup','Filter via Tag');
 
   // add behaviour
-  $menuItem.on('click',function(e){    
+  $menuItem.on('click',function(e){
     let $this = jQuery(this);
     if($popup.is(':visible')) { $popup.hide(); }
     else {
@@ -1164,7 +1168,7 @@ let buildHashtagsFilter = function () {
 
     e.preventDefault();
     return false;
-  });  
+  });
 
 	TrelloPro.$footer.find('.board-header-btns.mod-left').append($menuItem);
 }
@@ -1189,7 +1193,7 @@ let buildListsFilter = function () {
 
 	// prepare popup
 	let $popup = buildPopup('tpro-listfilter-popup','Show/Hide Lists');
-	
+
 	// add behaviour
   $menuItem.on('click',function(e){
     let $this = jQuery(this);
@@ -1263,7 +1267,7 @@ let buildListsFilter = function () {
     e.preventDefault();
     return false;
   });
-		
+
 	TrelloPro.$footer.find('.board-header-btns.mod-left')
 		.append($menuItem)
 		.append('<span class="board-header-btn-divider"></span>');
@@ -1279,7 +1283,7 @@ let buildListStats = function($list,list) {
   // init and clear stats
   let $stats = $list.parent().find('.tpro-list-stats');
   if($stats.length == 0) {
-    $stats = jQuery('<div class="tpro-list-stats"></div>');		
+    $stats = jQuery('<div class="tpro-list-stats"></div>');
 
 		// card count
 		$stats.append(
@@ -1390,9 +1394,9 @@ let buildListStats = function($list,list) {
 let buildListEnhancementMenu = function($trigger) {
 	let $list = $trigger.parents('.list-wrapper');
 	let list = $list.data('tpro-list');
-		
+
 	let $menu = jQuery('<ul class="pop-over-list tpro-list-menu"></ul>');
-	
+
 	// background menu
 	let $inputColor = jQuery('<input type="text" />');
 	if(getListEnchancement(list,'background')) {
@@ -1401,10 +1405,10 @@ let buildListEnhancementMenu = function($trigger) {
 	$inputColor.on('input', function(){
 		setListEnchancement(list,'background',$inputColor.val());
 		rebuildDynamicStyles();
-		saveSettings();		
+		saveSettings();
 	});
 	jQuery('<li><strong>Background Color</strong></li>').append($inputColor).appendTo($menu);
-	
+
 	// width menu
 	let $inputWidth = jQuery('<input type="text" />');
 	if(getListEnchancement(list,'width')) {
@@ -1413,7 +1417,7 @@ let buildListEnhancementMenu = function($trigger) {
 	$inputWidth.on('input', function(){
 		setListEnchancement(list,'width',$inputWidth.val());
 		rebuildDynamicStyles();
-		saveSettings();		
+		saveSettings();
 	});
 	jQuery('<li><strong>List Width</strong></li>').append($inputWidth).appendTo($menu);
 
@@ -1561,9 +1565,9 @@ let loadBoard = function () {
 					log('[ TrelloPro loaded ]');
 					TrelloPro.loaded = true;
 					buildFooter();
-					refreshListsAndStats();					
-					buildListsFilter();		
-					buildPriorityFilter();			
+					refreshListsAndStats();
+					buildListsFilter();
+					buildPriorityFilter();
 					buildProjectFilter();
 					buildLabelsFilter();
 					buildHashtagsFilter();
@@ -1639,7 +1643,7 @@ let tpro = function(){
 		if($target.hasClass('list-header-extras-menu')) {
 			buildListEnhancementMenu($target);
 			return;
-		}	
+		}
 
 	});
 
