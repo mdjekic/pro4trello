@@ -745,7 +745,8 @@ let buildMenu = function () {
 	let $popup = buildPopup('tpro-menu-popup','Pro4Trello Menu');
 	let $list = $popup.find('.pop-over-list').html('');
 	$list.append('<li><a class="js-select light-hover" href="#" data-action="settings"><i class="fa fa-cog" style="color: #0984e3; float:right; padding-top: 3px;"></i>Board Settings</a></li>');
-	$list.append('<li><a class="js-select light-hover" href="#" data-action="global-settings"><i class="fa fa-cogs" style="color: #6c5ce7; float:right; padding-top: 3px;"></i>Global Settings</a></li>');
+	$list.append('<li><a class="js-select light-hover" href="#" data-action="global-settings"><i class="fa fa-cogs" style="color: #e17055; float:right; padding-top: 3px;"></i>Global Settings</a></li>');
+	$list.append('<li><a class="js-select light-hover" href="#" data-action="help-videos"><i class="fa fa-video-camera" style="color: #e84393; float:right; padding-top: 3px;"></i>Help Videos</a></li>');
 	$list.append('<li><hr /></li>');
 	$list.append('<li><a class="js-select light-hover" href="#" data-action="about"><i class="fa fa-question-circle" style="color: #2d3436; float:right; padding-top: 3px;"></i>About</a></li>');
 	$list.append('<li><a class="js-select light-hover" href="#" data-action="review"><i class="fa fa-thumbs-up" style="color: #006266; float:right; padding-top: 3px;"></i>Review Extension</a></li>');
@@ -778,7 +779,10 @@ let buildMenu = function () {
 				TrelloPro.$footer.hide();
 				break;
 			case 'global-settings':
-				let w = window.open(chrome.runtime.getURL('options.html'), '_blank');
+				window.open(chrome.runtime.getURL('options.html'), '_blank');
+				break;
+			case 'help-videos':
+				window.open('https://apptorium.net/pro-for-trello/helper-videos', '_blank');
 				break;
 			case 'about':
 				window.open(chrome.runtime.getURL('docs/about.html'), '_blank');
