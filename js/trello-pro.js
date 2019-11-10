@@ -1202,7 +1202,11 @@ let buildListsFilter = function () {
     if($popup.is(':visible')) { $popup.hide(); }
     else {
       // render lists data
-      let $ul = $popup.find('ul').html('<li class="check-filter-item show-all" href="#"><a href="#" style="float: right" class="filter-trigger">Show All</a></li>');
+      let $ul = $popup.find('ul').html('');
+			// let $ul = $popup.find('ul').html(
+			// 	'<li class="check-filter-item show-all" href="#"><a href="#" style="float: right" class="filter-trigger">Show All</a></li>'
+			// 	+ '<li class="check-filter-item hide-all" href="#"><a href="#" style="float: right" class="filter-trigger">Hide All</a></li>'
+			// );
 			if(!TrelloPro.settings.filters.lists) {
 				TrelloPro.settings.filters.lists = [];
 			}
@@ -1224,31 +1228,29 @@ let buildListsFilter = function () {
         $ul.append($li);
       }
 
+			// render special buttons
+			let $showAll = $('<a href="#" style="float:left">Show All</a></li>');
+			let $hideAll = $('<a href="#" style="float:right">Hide All</a></li>');
+			$('<hr />').appendTo($ul).after(
+				$('<div></div>').append($showAll).append($hideAll)
+			);
+
       // attach filter behaviour
 			$ul.find('.check-filter-item .filter-trigger').on('click',function(evt){
         let $this = jQuery(this).parent();
-
-				// check all
-				if($this.hasClass('show-all')) {
-					TrelloPro.settings.filters.lists = [];
-					$this.parent().find('.check-filter-item').not('.show-all').addClass('checked');
-					$popup.hide();
+				let list = $this.data().list;
+				if($this.hasClass('checked')) {
+					// add list to hidden
+					TrelloPro.settings.filters.lists.push(list);
+					// remove dulpicates
+					TrelloPro.settings.filters.lists = TrelloPro.settings.filters.lists.sort().filter(function(item, pos, arr) {
+							return !pos || item != arr[pos - 1];
+					});
+					$this.removeClass('checked');
 				} else {
-					// check specific list
-					let list = $this.data().list;
-					if($this.hasClass('checked')) {
-						// add list to hidden
-						TrelloPro.settings.filters.lists.push(list);
-						// remove dulpicates
-						TrelloPro.settings.filters.lists = TrelloPro.settings.filters.lists.sort().filter(function(item, pos, arr) {
-								return !pos || item != arr[pos - 1];
-						});
-						$this.removeClass('checked');
-					} else {
-						let index = TrelloPro.settings.filters.lists.indexOf(list);
-						if (index !== -1) TrelloPro.settings.filters.lists.splice(index, 1);
-						$this.addClass('checked');
-					}
+					let index = TrelloPro.settings.filters.lists.indexOf(list);
+					if (index !== -1) TrelloPro.settings.filters.lists.splice(index, 1);
+					$this.addClass('checked');
 				}
 
 				refreshListFilter();
@@ -1258,6 +1260,36 @@ let buildListsFilter = function () {
         evt.preventDefault();
         return false;
       });
+
+			// attach special buttons behavior
+			$showAll.on('click',function(e){
+				e.preventDefault();
+				TrelloPro.settings.filters.lists = [];
+				$ul.find('.check-filter-item').addClass('checked');
+				$popup.hide();
+
+				refreshListFilter();
+        rebuildDynamicStyles();
+        saveSettings();
+				return false;
+			});
+			$hideAll.on('click',function(e){
+				e.preventDefault();
+				// map all lists into filter
+				TrelloPro.settings.filters.lists = $ul.find('.check-filter-item').removeClass('checked').map(function(i,item){
+					return jQuery(item).data().list;
+				}).get();
+				// remove duplicates
+				TrelloPro.settings.filters.lists = TrelloPro.settings.filters.lists.sort().filter(function(item, pos, arr) {
+						return !pos || item != arr[pos - 1];
+				});
+				$popup.hide();
+
+				refreshListFilter();
+        rebuildDynamicStyles();
+        saveSettings();
+				return false;
+			});
 
       // show popup
       $popup.css({
