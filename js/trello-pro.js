@@ -70,6 +70,7 @@ let renderAttrName = function(name) {
   return name.toLowerCase()
     .replace('&amp;','and')
 		.replace('&','and')
+		.replace(' ','-')
     .replace(/\(.+?\)/g, '')
 		.replace(/[!@#$%^&*(),.?":{}|<>]/gi, '-');
 }
