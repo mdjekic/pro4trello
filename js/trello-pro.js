@@ -1509,7 +1509,7 @@ let loadCss = function(){
 
 		// custom background
 		if (TrelloPro.settings['custom-background'] && TrelloPro.settings['custom-background-input'] !== "") {
-			let $customBackgroundStyle = jQuery('<style id="tpro-custom-background-css">body, #classic-body { background-image: url("'+TrelloPro.settings['custom-background-input']+'") !important }</style>');
+			let $customBackgroundStyle = jQuery('<style id="tpro-custom-background-css">#trello-root { background-image: url("'+TrelloPro.settings['custom-background-input']+'") !important }</style>');
 			jQuery('body').append($customBackgroundStyle);
 		} else {
 			let $customBackgroundStyle = jQuery("#tpro-custom-background-css");
