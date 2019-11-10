@@ -753,7 +753,7 @@ let buildMenu = function () {
 	$list.append('<li><a class="js-select light-hover" href="#" data-action="support"><i class="fa fa-book" style="color: #6c5ce7; float:right; padding-top: 3px;"></i>Get Support</a></li>');
 	$list.append('<li><hr /></li>');
 	$list.append('<li><a class="js-select light-hover" href="#" data-action="share"><i class="fa fa-heart" style="color: #d63031; float:right; padding-top: 3px;"></i>Share the Love</a></li>');
-	$list.append('<li><a class="js-select light-hover" href="#" data-action="donate"><i class="fa fa-beer" style="color: #F79F1F; float:right; padding-top: 3px;"></i>Donate to Author</a></li>');
+	$list.append('<li><a class="js-select light-hover" href="#" data-action="donate" style="background-color: #ffeaa7"><i class="fa fa-beer" style="color: #F79F1F; float:right; padding-top: 3px;"></i>Donate to Author</a></li>');
 
 	let $menuButton = jQuery('<a id="tpro-menu-button" class="board-header-btn calendar-btn" href="#"><span class="icon-sm icon-board board-header-btn-icon"></span><span class="board-header-btn-text u-text-underline">Pro4Trello</span></a>');
 	$menuButton.on('click', function(e) {
