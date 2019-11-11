@@ -68,12 +68,9 @@ let sumTimeEntries = function(startTime, endTime) {
  * @return {string}
  */
 let renderAttrName = function(name) {
-  return name.toLowerCase()
-    .replace('&amp;','and')
-		.replace('&','and')
-		.replace(' ','-')
-    .replace(/\(.+?\)/g, '')
-		.replace(/[!@#$%^&*(),.?":{}|<>]/gi, '-');
+  return name.toLowerCase()	
+	.replace(/[!@#$%^&*(),.?":{}|<> ]/gi, '-')
+	.replace(/(-)(?=.*\1)/g, "");
 }
 
 /**
