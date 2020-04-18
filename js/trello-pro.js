@@ -9,6 +9,7 @@ TrelloPro.boardTitle = null;
 
 TrelloPro.settings = {};
 TrelloPro.settingsOverride = false;
+TrelloPro.autoHideFooter = false;
 
 TrelloPro.data = {
 	lists: [],
@@ -85,9 +86,9 @@ let sumTimeEntries = function(startTime, endTime) {
  * @return {string}
  */
 let renderAttrName = function(name) {
-  return name.toLowerCase()
-    .replace('&amp;','and').replace('&','and')
-    .replace(/\(.+?\)/g, '').replace(/[^a-z0-9+]+/gi, '-');
+  return name.toLowerCase()	
+	.replace(/[!@#$%^&*(),.?":{}|<> ]/gi, '-')
+	.replace(/(-)(?=.*\1)/g, "");
 }
 
 /**
@@ -272,7 +273,7 @@ let processCardTitleChange = function ($title,refreshData) {
  *
  * @param {jQuery} $list
  */
-let processListTitleChange = function($list) {	
+let processListTitleChange = function($list) {
 	let oldId = $list.data('tpro-list');
 	refreshListsAndStats();
 	let newId = $list.data('tpro-list');
@@ -309,16 +310,16 @@ let rebuildDynamicStyles = function() {
 		// build priority filters
 		if(TrelloPro.settings['parse-priority-marks'] && TrelloPro.settings.filters.priority) {
 			css += '#tpro-header-button-priority { background-color: #2c3e50; } ';
-			css += '.list-card:not(.js-composer):not(.tpro-priority-' + TrelloPro.settings.filters.priority + ') { display: none; } ';			
+			css += '.list-card:not(.js-composer):not(.tpro-priority-' + TrelloPro.settings.filters.priority + ') { display: none; } ';
 		}
-		
+
 		// build project filters
 		if(TrelloPro.settings['parse-projects'] && TrelloPro.settings.filters.project) {
 			// apply only if project exists
 			if(TrelloPro.data.projects.map(function(project){ return project.key; }).indexOf(TrelloPro.settings.filters.project) > -1) {
 				css += '#tpro-header-button-projects { background-color: #2c3e50; } ';
 				css += '.list-card:not(.js-composer):not(.tpro-project-' + TrelloPro.settings.filters.project + ') { display: none; } ';
-			}				
+			}
 		}
 
 		// build label filters
@@ -327,7 +328,7 @@ let rebuildDynamicStyles = function() {
 			if(TrelloPro.data.labels.map(function(label){ return label.key; }).indexOf(TrelloPro.settings.filters.label) > -1) {
 				css += '#tpro-header-button-labels { background-color: #2c3e50; } ';
 				css += '.list-card:not(.js-composer):not(.tpro-label-' + TrelloPro.settings.filters.label + ') { display: none; } ';
-			}				
+			}
 		}
 
 		// build hashtag filters
@@ -336,7 +337,7 @@ let rebuildDynamicStyles = function() {
 			if(TrelloPro.data.hashtags.map(function(hashtag){ return hashtag.key; }).indexOf(TrelloPro.settings.filters.hashtag) > -1) {
 				css += '#tpro-header-button-hashtags { background-color: #2c3e50; } ';
 				css += '.list-card:not(.js-composer):not(.tpro-hashtag-' + TrelloPro.settings.filters.hashtag + ') { display: none; } ';
-			}				
+			}
 		}
 
 		// build list filters
@@ -358,8 +359,8 @@ let rebuildDynamicStyles = function() {
 					css += '.tpro-list-'+list+' .tpro-list-stats { background-color: '+TrelloPro.settings.listEnchancements[list]['background']+' !important; } ';
 				}
 				if(TrelloPro.settings.listEnchancements[list]['width']) {
-					css += '.tpro-list-'+list+' { width: '+TrelloPro.settings.listEnchancements[list]['width']+' !important; } ';	
-				}			
+					css += '.tpro-list-'+list+' { width: '+TrelloPro.settings.listEnchancements[list]['width']+' !important; } ';
+				}
 			}
 		}
 	}
@@ -389,12 +390,12 @@ let saveSettings = function() {
 
 /**
  * Sets list enchancement in settings
- * 
+ *
  * @param {string} list
  * @param {string} key
  * @param {string} value
  */
-let setListEnchancement = function(list, key, value) {	
+let setListEnchancement = function(list, key, value) {
 	if(!TrelloPro.settings.listEnchancements) {
 		TrelloPro.settings.listEnchancements = {};
 	}
@@ -410,7 +411,7 @@ let setListEnchancement = function(list, key, value) {
 
 /**
  * Gets list enchancement from settings
- * 
+ *
  * @param {string} list
  * @param {string} key
  */
@@ -441,7 +442,7 @@ let buildData = function() {
 		{ key: 'medium', value: 'Medium Priority', cardCount: jQuery('.tpro-priority-medium').length },
 		{ key: 'high', value: 'High Priority', cardCount: jQuery('.tpro-priority-high').length }
 	];
-	
+
   // get all projects
 	let projects = [];
 	let keys = [];
@@ -481,7 +482,7 @@ let buildData = function() {
   }
   labels.sort(sorter);
 
-	// get all hashtags	
+	// get all hashtags
 	let hashtags = [];
 	keys = [];
   let $hashtags = jQuery('.tpro-hashtag');
@@ -691,7 +692,7 @@ let buildSettingsPane = function () {
 					saveSettings();
           TrelloPro.$settingsPane.fadeOut(150);
 					jQuery('#board').show();
-					TrelloPro.$footer.show();
+					//TrelloPro.$footer.show();
         });
 
         // attach save button behaviour
@@ -748,6 +749,9 @@ let buildFooter = function() {
 
 	TrelloPro.$footer = jQuery('<div id="tpro-footer" class="u-clearfix"><div class="board-header-btns mod-left"></div><div class="board-header-btns mod-right"></div></div>');
 	TrelloPro.$footer.appendTo(jQuery('.board-main-content'));
+	if(TrelloPro.autoHideFooter) {
+		TrelloPro.$footer.hide();
+	}
 }
 
 /**
@@ -759,16 +763,21 @@ let buildMenu = function () {
 	// prepare popup
 	let $popup = buildPopup('tpro-menu-popup','Pro4Trello Menu');
 	let $list = $popup.find('.pop-over-list').html('');
+	let $toggleFooter = jQuery('<input id="tpro-toggle-hide-footer" type="checkbox" value="1" />')
 	$list.append('<li><a class="js-select light-hover" href="#" data-action="settings"><i class="fa fa-cog" style="color: #0984e3; float:right; padding-top: 3px;"></i>Board Settings</a></li>');
+	$list.append('<li><a class="js-select light-hover" href="#" data-action="global-settings"><i class="fa fa-cogs" style="color: #e17055; float:right; padding-top: 3px;"></i>Global Settings</a></li>');
+	$list.append('<li><a class="js-select light-hover" href="#" data-action="help-videos"><i class="fa fa-video-camera" style="color: #e84393; float:right; padding-top: 3px;"></i>Help Videos</a></li>');
 	$list.append('<li><hr /></li>');
 	$list.append('<li><a class="js-select light-hover" href="#" data-action="about"><i class="fa fa-question-circle" style="color: #2d3436; float:right; padding-top: 3px;"></i>About</a></li>');
 	$list.append('<li><a class="js-select light-hover" href="#" data-action="review"><i class="fa fa-thumbs-up" style="color: #006266; float:right; padding-top: 3px;"></i>Review Extension</a></li>');
 	$list.append('<li><a class="js-select light-hover" href="#" data-action="support"><i class="fa fa-book" style="color: #6c5ce7; float:right; padding-top: 3px;"></i>Get Support</a></li>');
 	$list.append('<li><hr /></li>');
 	$list.append('<li><a class="js-select light-hover" href="#" data-action="share"><i class="fa fa-heart" style="color: #d63031; float:right; padding-top: 3px;"></i>Share the Love</a></li>');
-	$list.append('<li><a class="js-select light-hover" href="#" data-action="donate"><i class="fa fa-beer" style="color: #F79F1F; float:right; padding-top: 3px;"></i>Buy Beer for Author</a></li>');
+	$list.append('<li><a class="js-select light-hover" href="#" data-action="donate" style="background-color: #ffeaa7"><i class="fa fa-beer" style="color: #F79F1F; float:right; padding-top: 3px;"></i>Donate to Author</a></li>');
+	$popup.append('<hr />');
+	$popup.append(jQuery('<div style="text-align:center"></div>').append(jQuery('<label for="tpro-toggle-hide-footer">Auto-hide footer</label>').prepend($toggleFooter)));
 
-	let $menuButton = jQuery('<a id="tpro-menu-button" class="board-header-btn calendar-btn" href="#"><span class="icon-sm icon-board board-header-btn-icon"></span><span class="board-header-btn-text u-text-underline">Pro4Trello</span></a>');	
+	let $menuButton = jQuery('<a id="tpro-menu-button" class="board-header-btn calendar-btn" href="#"><span class="icon-sm icon-board board-header-btn-icon"></span><span class="board-header-btn-text u-text-underline">Pro4Trello</span></a>');
 	$menuButton.on('click', function(e) {
 		let $this = jQuery(this);
     if($popup.is(':visible')) { $popup.hide(); }
@@ -791,6 +800,12 @@ let buildMenu = function () {
 				jQuery('#board').hide();
 				TrelloPro.$footer.hide();
 				break;
+			case 'global-settings':
+				window.open(chrome.runtime.getURL('options.html'), '_blank');
+				break;
+			case 'help-videos':
+				window.open('https://apptorium.net/pro-for-trello/helper-videos', '_blank');
+				break;
 			case 'about':
 				window.open(chrome.runtime.getURL('docs/about.html'), '_blank');
 				break;
@@ -798,7 +813,7 @@ let buildMenu = function () {
 				window.open('https://chrome.google.com/webstore/detail/pro-for-trello-free-trell/hcjkfaengbcfeckhjgjdldmhjpoglecc/reviews', '_blank');
 				break;
 			case 'support':
-				window.open('https://chrome.google.com/webstore/detail/pro-for-trello-free-trell/hcjkfaengbcfeckhjgjdldmhjpoglecc/support', '_blank');				
+				window.open('https://chrome.google.com/webstore/detail/pro-for-trello-free-trell/hcjkfaengbcfeckhjgjdldmhjpoglecc/support', '_blank');
 				break;
 			case 'share':
 				loadSharePane();
@@ -813,14 +828,26 @@ let buildMenu = function () {
 		return false;
 	});
 
+	// toggle footer auto-hide toggle behavior
+	if(TrelloPro.autoHideFooter) {
+		$toggleFooter.attr('checked',true);
+	}
+	$toggleFooter.on('change',function(e){
+		TrelloPro.autoHideFooter = $toggleFooter.is(':checked');
+		if(!TrelloPro.autoHideFooter) {
+			TrelloPro.$footer.show();
+		}
+		store('autohide',TrelloPro.autoHideFooter);
+	});
+
 	$menuButton.appendTo(TrelloPro.$footer.find('.board-header-btns.mod-right'));
 }
 
 /**
  * Builds a popup
- * 
- * @param {string} id 
- * @param {string} title 
+ *
+ * @param {string} id
+ * @param {string} title
  */
 let buildPopup = function(id, title){
   let $popup = jQuery('<div id="'+id+'" class="tpro-popup"></div>');
@@ -844,7 +871,7 @@ let buildPopup = function(id, title){
     e.preventDefault();
     return false;
 	});
-	
+
 	return $popup.appendTo(jQuery('body'));
 }
 
@@ -928,8 +955,8 @@ let buildPriorityFilter = function () {
     e.preventDefault();
     return false;
   });
-	
-	TrelloPro.$footer.find('.board-header-btns.mod-left').append($menuItem);  
+
+	TrelloPro.$footer.find('.board-header-btns.mod-left').append($menuItem);
 }
 
 /**
@@ -1013,8 +1040,8 @@ let buildProjectFilter = function () {
     e.preventDefault();
     return false;
   });
-	
-	TrelloPro.$footer.find('.board-header-btns.mod-left').append($menuItem);  
+
+	TrelloPro.$footer.find('.board-header-btns.mod-left').append($menuItem);
 }
 
 /**
@@ -1045,7 +1072,7 @@ let buildLabelsFilter = function () {
 	let $popup = buildPopup('tpro-label-popup','Filter via Tag');
 
   // add behaviour
-  $menuItem.on('click',function(e){    
+  $menuItem.on('click',function(e){
     let $this = jQuery(this);
     if($popup.is(':visible')) { $popup.hide(); }
     else {
@@ -1182,7 +1209,7 @@ let buildHashtagsFilter = function () {
 
     e.preventDefault();
     return false;
-  });  
+  });
 
 	TrelloPro.$footer.find('.board-header-btns.mod-left').append($menuItem);
 }
@@ -1207,14 +1234,18 @@ let buildListsFilter = function () {
 
 	// prepare popup
 	let $popup = buildPopup('tpro-listfilter-popup','Show/Hide Lists');
-	
+
 	// add behaviour
   $menuItem.on('click',function(e){
     let $this = jQuery(this);
     if($popup.is(':visible')) { $popup.hide(); }
     else {
       // render lists data
-      let $ul = $popup.find('ul').html('<li class="check-filter-item show-all" href="#"><a href="#" style="float: right" class="filter-trigger">Show All</a></li>');
+      let $ul = $popup.find('ul').html('');
+			// let $ul = $popup.find('ul').html(
+			// 	'<li class="check-filter-item show-all" href="#"><a href="#" style="float: right" class="filter-trigger">Show All</a></li>'
+			// 	+ '<li class="check-filter-item hide-all" href="#"><a href="#" style="float: right" class="filter-trigger">Hide All</a></li>'
+			// );
 			if(!TrelloPro.settings.filters.lists) {
 				TrelloPro.settings.filters.lists = [];
 			}
@@ -1236,31 +1267,29 @@ let buildListsFilter = function () {
         $ul.append($li);
       }
 
+			// render special buttons
+			let $showAll = $('<a href="#" style="float:left">Show All</a></li>');
+			let $hideAll = $('<a href="#" style="float:right">Hide All</a></li>');
+			$('<hr />').appendTo($ul).after(
+				$('<div></div>').append($showAll).append($hideAll)
+			);
+
       // attach filter behaviour
 			$ul.find('.check-filter-item .filter-trigger').on('click',function(evt){
         let $this = jQuery(this).parent();
-
-				// check all
-				if($this.hasClass('show-all')) {
-					TrelloPro.settings.filters.lists = [];
-					$this.parent().find('.check-filter-item').not('.show-all').addClass('checked');
-					$popup.hide();
+				let list = $this.data().list;
+				if($this.hasClass('checked')) {
+					// add list to hidden
+					TrelloPro.settings.filters.lists.push(list);
+					// remove dulpicates
+					TrelloPro.settings.filters.lists = TrelloPro.settings.filters.lists.sort().filter(function(item, pos, arr) {
+							return !pos || item != arr[pos - 1];
+					});
+					$this.removeClass('checked');
 				} else {
-					// check specific list
-					let list = $this.data().list;
-					if($this.hasClass('checked')) {
-						// add list to hidden
-						TrelloPro.settings.filters.lists.push(list);
-						// remove dulpicates
-						TrelloPro.settings.filters.lists = TrelloPro.settings.filters.lists.sort().filter(function(item, pos, arr) {
-								return !pos || item != arr[pos - 1];
-						});
-						$this.removeClass('checked');
-					} else {
-						let index = TrelloPro.settings.filters.lists.indexOf(list);
-						if (index !== -1) TrelloPro.settings.filters.lists.splice(index, 1);
-						$this.addClass('checked');
-					}
+					let index = TrelloPro.settings.filters.lists.indexOf(list);
+					if (index !== -1) TrelloPro.settings.filters.lists.splice(index, 1);
+					$this.addClass('checked');
 				}
 
 				refreshListFilter();
@@ -1270,6 +1299,36 @@ let buildListsFilter = function () {
         evt.preventDefault();
         return false;
       });
+
+			// attach special buttons behavior
+			$showAll.on('click',function(e){
+				e.preventDefault();
+				TrelloPro.settings.filters.lists = [];
+				$ul.find('.check-filter-item').addClass('checked');
+				$popup.hide();
+
+				refreshListFilter();
+        rebuildDynamicStyles();
+        saveSettings();
+				return false;
+			});
+			$hideAll.on('click',function(e){
+				e.preventDefault();
+				// map all lists into filter
+				TrelloPro.settings.filters.lists = $ul.find('.check-filter-item').removeClass('checked').map(function(i,item){
+					return jQuery(item).data().list;
+				}).get();
+				// remove duplicates
+				TrelloPro.settings.filters.lists = TrelloPro.settings.filters.lists.sort().filter(function(item, pos, arr) {
+						return !pos || item != arr[pos - 1];
+				});
+				$popup.hide();
+
+				refreshListFilter();
+        rebuildDynamicStyles();
+        saveSettings();
+				return false;
+			});
 
       // show popup
       $popup.css({
@@ -1281,7 +1340,7 @@ let buildListsFilter = function () {
     e.preventDefault();
     return false;
   });
-		
+
 	TrelloPro.$footer.find('.board-header-btns.mod-left')
 		.append($menuItem)
 		.append('<span class="board-header-btn-divider"></span>');
@@ -1297,7 +1356,7 @@ let buildListStats = function($list,list) {
   // init and clear stats
   let $stats = $list.parent().find('.tpro-list-stats');
   if($stats.length == 0) {
-    $stats = jQuery('<div class="tpro-list-stats"></div>');		
+    $stats = jQuery('<div class="tpro-list-stats"></div>');
 
 		// card count
 		$stats.append(
@@ -1408,9 +1467,9 @@ let buildListStats = function($list,list) {
 let buildListEnhancementMenu = function($trigger) {
 	let $list = $trigger.parents('.list-wrapper');
 	let list = $list.data('tpro-list');
-		
+
 	let $menu = jQuery('<ul class="pop-over-list tpro-list-menu"></ul>');
-	
+
 	// background menu
 	let $inputColor = jQuery('<input type="text" />');
 	if(getListEnchancement(list,'background')) {
@@ -1419,10 +1478,10 @@ let buildListEnhancementMenu = function($trigger) {
 	$inputColor.on('input', function(){
 		setListEnchancement(list,'background',$inputColor.val());
 		rebuildDynamicStyles();
-		saveSettings();		
+		saveSettings();
 	});
 	jQuery('<li><strong>Background Color</strong></li>').append($inputColor).appendTo($menu);
-	
+
 	// width menu
 	let $inputWidth = jQuery('<input type="text" />');
 	if(getListEnchancement(list,'width')) {
@@ -1431,7 +1490,7 @@ let buildListEnhancementMenu = function($trigger) {
 	$inputWidth.on('input', function(){
 		setListEnchancement(list,'width',$inputWidth.val());
 		rebuildDynamicStyles();
-		saveSettings();		
+		saveSettings();
 	});
 	jQuery('<li><strong>List Width</strong></li>').append($inputWidth).appendTo($menu);
 
@@ -1484,7 +1543,7 @@ let loadCss = function(){
 
 		// custom background
 		if (TrelloPro.settings['custom-background'] && TrelloPro.settings['custom-background-input'] !== "") {
-			let $customBackgroundStyle = jQuery('<style id="tpro-custom-background-css">body, #classic-body { background-image: url("'+TrelloPro.settings['custom-background-input']+'") !important }</style>');
+			let $customBackgroundStyle = jQuery('<style id="tpro-custom-background-css">#trello-root { background-image: url("'+TrelloPro.settings['custom-background-input']+'") !important }</style>');
 			jQuery('body').append($customBackgroundStyle);
 		} else {
 			let $customBackgroundStyle = jQuery("#tpro-custom-background-css");
@@ -1553,7 +1612,7 @@ let loadBoard = function () {
 
   // load settings
   TrelloPro.settings = TrelloPro.config.defaultSettings; // TODO get 'data_'+TrelloPro.boardId
-  chrome.storage.sync.get(['defaults',TrelloPro.boardId], function (settings) {
+  chrome.storage.sync.get(['defaults',TrelloPro.boardId,'autohide'], function (settings) {
 		log('[loaded board settings]');
 
 		// set board-specific settings flag
@@ -1562,6 +1621,12 @@ let loadBoard = function () {
 		// get defaults and board-specific settings
 		let defaults = settings['defaults'] ? settings['defaults'] : {};
 		let boardSettings = settings[TrelloPro.boardId] ? settings[TrelloPro.boardId] : {};
+
+		// set auto-hide settings
+		TrelloPro.autoHideFooter = settings['autohide'];
+		if(typeof TrelloPro.autoHideFooter !== 'boolean') {
+			TrelloPro.autoHideFooter = false;
+		}
 
 		// merge settings
 		TrelloPro.settings = jQuery.extend({}, TrelloPro.settings, defaults);
@@ -1579,9 +1644,9 @@ let loadBoard = function () {
 					log('[ TrelloPro loaded ]');
 					TrelloPro.loaded = true;
 					buildFooter();
-					refreshListsAndStats();					
-					buildListsFilter();		
-					buildPriorityFilter();			
+					refreshListsAndStats();
+					buildListsFilter();
+					buildPriorityFilter();
 					buildProjectFilter();
 					buildLabelsFilter();
 					buildHashtagsFilter();
@@ -1657,7 +1722,7 @@ let tpro = function(){
 		if($target.hasClass('list-header-extras-menu')) {
 			buildListEnhancementMenu($target);
 			return;
-		}	
+		}
 
 	});
 
@@ -1699,6 +1764,18 @@ let tpro = function(){
 		if (!$card.hasClass('list-card') || $card.hasClass('placeholder') || $card.css('position') == 'absolute') return;
 		//processCardTitleChange($card.find('.list-card-title'),true);
 		processCardTitleChange($card.find('.list-card-title'),false);
+	});
+
+	// bind mouse movements for show/hide footer
+	jQuery('body').on('mousemove',function(e) {
+		if(!TrelloPro.loaded) return;
+		if(!TrelloPro.autoHideFooter) return;
+	  if(window.innerHeight - e.pageY >= 44) {
+			if(TrelloPro.$footer.is(':visible')) TrelloPro.$footer.hide();
+		}
+		else {
+			if(!TrelloPro.$footer.is(':visible')) TrelloPro.$footer.show();
+		}
 	});
 
 	// bind element removal

@@ -1,70 +1,43 @@
-Ultimate FREE tweaks and enhancements for Trello users! Your Trello boards on steroids!
-
-Pro for Trello is an ultimate FREE Trello tweaking tool for Google Chrome. It comes packed with features and you can customize it for each individual board, choosing what you want to tweak and what not.
+Pro for Trello is a Trello enhancement tool for Google Chrome. It comes packed with features and you can customize it for each individual board, choosing what you want to tweak and what not.
 
 We are not affiliated, associated, authorized, endorsed by or in any way officially connected to Trello, Inc. (www.trello.com).
 
-Read this description in a visually superior environment: https://apptorium.net/pro-for-trello
+Visit project homepage: https://apptorium.net/pro-for-trello
 
-[1] CARD ENHANCEMENTS
+1. CARDS
 
-These enhancements expand the type of information that a Trello card can contain without sacrificing simplicity and ease of use. They also make the card more readable and process friendly.
-
-You can now turn on and use the following new components within cards:
-
-[1.1] Category - will be rendered as bold text to make it easy for you to discern different projects or ticket groups. You can filter cards per category.
-[1.2] Tags - will be shown below card name with a tag icon to make it possible for you to add any number of custom inline labels/tags that don't conflict with Trello labels. You can filter cards per tag.
-[1.3] Time Entries - will be shown below card name with an hourglass icon to enable time estimation or time tracking and make it easy for you to see how much time was spent on a specific task.
-[1.4] Priorities - will make cards that have a level of priority more prominent. Besides no priority cards, you can set "low", "medium" and "high priority". You can filter cards per priority.
-[1.5] Points -  will be shown below card name with a star icon to enable adding points to cards (Scrum anyone?).
-[1.6] Card Numbers - will be shown as bold blue text to make it easy for you to reference cards for yourself or between team members.
-[1.7] Full-sized Trello Labels - turns those colored lines into full labels that fit perfectly on the card and really stand them out. You can choose between several label sizes.
-[1.8] Simple Markup - you can write simple markup in your card titles making it easy to emphasize things visually.
-[1.9] Hashtags - unlike tags, they will be shown inline within card title, colored blue. You can filter cards per hashtag.
+1.1 Category - will be rendered as bold text to make it easy for you to discern different projects or ticket groups. You can filter cards per category.
+1.2 Tags - will be shown below card name with a tag icon to make it possible for you to add any number of custom inline labels/tags that don't conflict with Trello labels. You can filter cards per tag.
+1.3 Time Entries - will be shown below card name with an hourglass icon to enable time estimation or time tracking and make it easy for you to see how much time was spent on a specific task.
+1.4 Priorities - will make cards that have a level of priority more prominent. Besides no priority cards, you can set "low", "medium" and "high priority". You can filter cards per priority.
+1.5 Points -  will be shown below card name with a star icon to enable adding points to cards (Scrum anyone?).
+1.6 Card Numbers - will be shown as bold blue text to make it easy for you to reference cards for yourself or between team members.
+1.7 Full-sized Trello Labels - turns those colored lines into full labels that fit perfectly on the card and really stand them out. You can choose between several label sizes.
+1.8 Simple Markup - you can write simple markup in your card titles making it easy to emphasize things visually.
+1.9 Hashtags - unlike tags, they will be shown inline within card title, colored blue. You can filter cards per hashtag.
 
 To enhance cards, use the following format in card titles:
 
-Category | Card Title [tag] {time-entry} |points| #hashtag !
+Category | Card Title tag {time-entry} |points| #hashtag !
 
-Pro for Trello will make the following changes:
-• render "Category |" as card category
-• render "[tag]" as an inline tag
-• render "{time-entry}" as a time entry
-• render "|points|" as card points
-• render "#hashtag" as an inline hashtag
-• render "!!" as medium priority
+2. LISTS
 
-[2] LIST ENHANCEMENTS
+2.1 Show/hide lists - you can hide any list on your board (without archiving it) to un-clutter your view.
+2.2 List stats - you can now have a status bar on the top of your lists that displays the no. of cards, sum of poinats, sum of time entries and the status of checklists (tasks).
+2.3 Progress bar - list stats can also include a progress bar for checklists.
+2.4 Custom background color - you can make lists more prominent and visually better by adding a custom color.
+2.5 Custom list width - you can manipulate the width of any particular list.
 
-You can use the following enhancements for your lists:
+3. OTHER
 
-[2.1] Show/hide lists - you can hide any list on your board (without archiving it) to unclutter your view.
-[2.2] List stats - you can now have a status bar on the top of your lists that displays the no. of cards, sum of points, sum of time entries and the status of checklists (tasks).
-[2.3] Progress bar - list stats can also include a progress bar for checklists.
-[2.4] Custom background color - you can make lists more prominent and visually better by adding a custom color.
-[2.5] Custom list width - you can manipulate the width of any particular list.
+3.1 Custom background image - just paste the URL of the image you want rendered as a background on your board and you're all set.
+3.2 Compact boards - you can make your boards more compact, a very useful feature especially when you have a lot of cards.
+3.3 Beautiful card descriptions - you can make card descriptions significantly more readable.
+3.4 Hide "Add a list..." - you can now hide that unused input that just takes up space and even forces the bottom scroll bar to appear.
+3.5 Custom CSS - if you know what you're doing and you know a way to make Trello look even better, this one's for you. Just paste your CSS and save, it will be loaded to your board.
 
-[3] OTHER ENHANCEMENTS
+4. ADDED VALUE
 
-You can also activate the following enhancements for any board:
-
-[3.1] Custom background image - just paste the URL of the image you want rendered as a background on your board and you're all set.
-[3.2] Compact boards - you can make your boards more compact, a very useful feature especially when you have a lot of cards.
-[3.3] Beautiful card descriptions - you can make card descriptions significantly more readable.
-[3.4] Hide "Add a list..." - you can now hide that unused input that just takes up space and even forces the bottom scroll bar to appear.
-[3.5] Custom CSS - if you know what you're doing and you know a way to make Trello look even better, this one's for you. Just paste your CSS and save, it will be loaded to your board.
-
-[4] ADDED VALUE
-
-Pro for Trello is built to be useful and fully customizable so you get:
-
-[4.1] Global configuration for all boards - you can configure enhancements that will be applied by default to all your Trello boards.
-[4.2] Per-board configuration - you can configure each specific board (overrides global configuration).
-[4.3] Exporting board configuration - you can easilly share configuration between boards and accross teams.
-
-[5] PERMISSIONS
-
-Pro for Trello requires the following permissions:
-
-• Read and write to trello.com - Speaks for itself, that's where Trello lives.
-• Storage - Local browser storage is used to store your configuration for the Trello boards where you use Pro for Trello features. The data is synced across browsers if you are signed in with your Google account.
+4.1 Global configuration for all boards - you can configure enhancements that will be applied by default to all your Trello boards.
+4.2 Per-board configuration - you can configure each specific board (overrides global configuration).
+4.3 Exporting board configuration - you can easily share configuration between boards and across teams.
