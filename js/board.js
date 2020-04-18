@@ -73,21 +73,23 @@ $(function(){
 
   loadSettings();
 
-  $('input[type="checkbox"],input[type="radio"]').on('change',updateSettings);
-  $('tinput[type="text"],extarea').on('input',updateSettings);
+  $('input[type="checkbox"]').on('change',updateSettings);
+  $('input[type="radio"]').on('change',updateSettings);
+  $('input[type="text"]').on('input',updateSettings);
+  $('textarea').on('input',updateSettings);
 
   $('#btnExport').on('click', function(e){
     e.preventDefault();
     let $tmp = $('<textarea style="position: fixed; height: 0px; width: 0px;"></textarea>').text(JSON.stringify(boardSettings)).appendTo($('body'));
-    $tmp.focus().select();    
-    
+    $tmp.focus().select();
+
     let success = document.execCommand('Copy');
     if(success) {
       alert('Board settings copied to clipboard!');
     } else {
       alert('Oooops... copying to clipboard failed...');
-    }    
-    
+    }
+
     $tmp.remove();
     return false;
   });
@@ -95,14 +97,14 @@ $(function(){
   $('#btnImport').on('click', function(e) {
     e.preventDefault();
     let $container = $('#clipboard-container').show();
-    
+
     let $tmp = $('<textarea style="position: fixed; height: 0px; width: 0px;"></textarea>').appendTo($('body'));
     $tmp.focus();
     $tmp.on('blur', function(){ $tmp.focus(); });
     $tmp.on('paste', function(evt) {
-      setTimeout(function(){        
+      setTimeout(function(){
         try {
-          let settings = JSON.parse($tmp.val());          
+          let settings = JSON.parse($tmp.val());
           applySettings(settings);
           updateSettings();
           alert('Board settings imported from clipboard!');
