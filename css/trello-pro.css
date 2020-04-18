@@ -62,7 +62,7 @@
   font-weight: bold;
   font-size: 11px;
   border-radius: 3px;
-} 
+}
 .tpro-tag.tpro-time-entry i { color: darkviolet; }
 
 .tpro-tag.tpro-point {
@@ -81,9 +81,9 @@ i.tpro-priority.high { color: #c0392b; }
 
 /* Card borders based on priorities */
 .list-card.tpro-priority-normal { border-left: 3px solid #95a5a6; }
-.list-card.tpro-priority-medium { border-left: 3px solid #f1c40f; }
-.list-card.tpro-priority-high { border-left: 3px solid #e67e22; }
-.list-card.tpro-priority-critical { border-left: 3px solid #c0392b; }
+.list-card.tpro-priority-low { border-left: 3px solid #f1c40f; }
+.list-card.tpro-priority-medium { border-left: 3px solid #e67e22; }
+.list-card.tpro-priority-high { border-left: 3px solid #c0392b; }
 
 /* ============================ LIST STATS ============================ */
 
@@ -95,10 +95,10 @@ body.tpro-show-list-stats .list { border-top-left-radius: 0px; border-top-right-
   background-color: #E2E4E6;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
-  height: 30px;  
+  height: 30px;
   width: 100%;
   margin-bottom: -5px;
-  padding-top: 5px;  
+  padding-top: 5px;
   text-align: right;
 }
 
@@ -134,7 +134,7 @@ body.tpro-show-list-stats .list { border-top-left-radius: 0px; border-top-right-
   width: 95%;
   height: 10px;
   display: inline-block;
-  padding: 0;  
+  padding: 0;
   padding-left: 5px;
   padding-right: 5px;
   margin-top: -10px;
