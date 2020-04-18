@@ -39,8 +39,6 @@ jQuery(function(){
   chrome.storage.sync.get('defaults', function (settings) {
     if(settings['defaults']) TrelloProSettings = jQuery.extend({}, TrelloProSettings, settings['defaults']);
 
-    console.log(TrelloProSettings);
-
     // apply settings
     for (let key in TrelloProSettings)
     {
