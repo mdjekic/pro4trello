@@ -560,27 +560,27 @@ let refreshListsAndStats = function() {
 
     // set basics
     list.title = $this.find('textarea.list-header-name').val();
-	list.id = renderAttrName(list.title);
-	list.index = i;
+		list.id = renderAttrName(list.title);
+		list.index = i;
     list.totalCards = parseInt($this.find('.list-header-num-cards').text());
-	list.totalVisibleCards = $this.find('.list-card').filter(visibleFilter).length;
+		list.totalVisibleCards = $this.find('.list-card').filter(visibleFilter).length;
 
-	// count points
+		// count points
     list.totalPoints = 0;
-	list.totalVisiblePoints = 0;
+		list.totalVisiblePoints = 0;
     $this.find('.tpro-point').each(function(){
       list.totalPoints += parseFloat(jQuery.trim(jQuery(this).text()));
     });
-	$this.find('.list-card').filter(visibleFilter).find('.tpro-point').each(function(){
+		$this.find('.list-card').filter(visibleFilter).find('.tpro-point').each(function(){
       list.totalVisiblePoints += parseFloat(jQuery.trim(jQuery(this).text()));
     });
 
-	// count time
+		// count time
     list.totalTime = '0:00';
-	list.totalVisibleTime = '0:00';
+		list.totalVisibleTime = '0:00';
     $this.find('.tpro-time-entry').each(function(){
-		let t = jQuery.trim(jQuery(this).text());
-		list.totalTime = sumTimeEntries(list.totalTime, t);
+			let t = jQuery.trim(jQuery(this).text());
+			list.totalTime = sumTimeEntries(list.totalTime, t);
     });
 		$this.find('.list-card').filter(visibleFilter).find('.tpro-time-entry').each(function(){
 			let t = jQuery.trim(jQuery(this).text());
@@ -1448,7 +1448,7 @@ let buildListStats = function($list,list) {
 		: list.totalVisibleTime + '/' + list.totalTime
 	);
 
-	// time sum
+	// price sum
 	$stats.find('.tpro-stat.price-sum span').text(list.totalVisiblePrice == list.totalPrice
 		? list.totalPrice
 		: list.totalVisiblePrice + '/' + list.totalPrice
