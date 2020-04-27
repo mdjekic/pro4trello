@@ -6,19 +6,20 @@ Visit project homepage: https://apptorium.net/pro-for-trello
 
 1. CARDS
 
-1.1 Category - will be rendered as bold text to make it easy for you to discern different projects or ticket groups. You can filter cards per category.
-1.2 Tags - will be shown below card name with a tag icon to make it possible for you to add any number of custom inline labels/tags that don't conflict with Trello labels. You can filter cards per tag.
-1.3 Time Entries - will be shown below card name with an hourglass icon to enable time estimation or time tracking and make it easy for you to see how much time was spent on a specific task.
-1.4 Priorities - will make cards that have a level of priority more prominent. Besides no priority cards, you can set "low", "medium" and "high priority". You can filter cards per priority.
-1.5 Points -  will be shown below card name with a star icon to enable adding points to cards (Scrum anyone?).
-1.6 Card Numbers - will be shown as bold blue text to make it easy for you to reference cards for yourself or between team members.
-1.7 Full-sized Trello Labels - turns those colored lines into full labels that fit perfectly on the card and really stand them out. You can choose between several label sizes.
-1.8 Simple Markup - you can write simple markup in your card titles making it easy to emphasize things visually.
-1.9 Hashtags - unlike tags, they will be shown inline within card title, colored blue. You can filter cards per hashtag.
+1.1  Category - will be rendered as bold text to make it easy for you to discern different projects or ticket groups. You can filter cards per category.
+1.2  Tags - will be shown below card name with a tag icon to make it possible for you to add any number of custom inline labels/tags that don't conflict with Trello labels. You can filter cards per tag.
+1.3  Time Entries - will be shown below card name with an hourglass icon to enable time estimation or time tracking and make it easy for you to see how much time was spent on a specific task.
+1.4  Priorities - will make cards that have a level of priority more prominent. Besides no priority cards, you can set "low", "medium" and "high priority". You can filter cards per priority.
+1.5  Points -  will be shown below card name with a star icon to enable adding points to cards (Scrum anyone?).
+1.6  Card Numbers - will be shown as bold blue text to make it easy for you to reference cards for yourself or between team members.
+1.7  Full-sized Trello Labels - turns those colored lines into full labels that fit perfectly on the card and really stand them out. You can choose between several label sizes.
+1.8  Simple Markup - you can write simple markup in your card titles making it easy to emphasize things visually.
+1.9  Hashtags - unlike tags, they will be shown inline within card title, colored blue. You can filter cards per hashtag.
+1.10 Price Entries - will be shown below card name with an Money icon to enable cost or earn money and make it easy for you to see how much money was spent on a specific task or how much money you earn with a specific task
 
 To enhance cards, use the following format in card titles:
 
-Category | Card Title tag {time-entry} |points| #hashtag !
+Category | Card Title tag {time-entry} $price-entry$ |points| #hashtag !
 
 2. LISTS
 

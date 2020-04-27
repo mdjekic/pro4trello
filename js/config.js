@@ -7,7 +7,8 @@ TrelloPro.config = {
 		labels: /(\[[^\]]*\])/g,
 		hashtags: /\W(\#[a-zA-Z]+\b)(?!;)/gm,
 		time_entries: /(\{[^\}]*\})/g,
-		points: /(\|[^\}]*\|)/g
+		points: /(\|[^\}]*\|)/g,
+		price_entries: /(\$[^\}]*\$)/g,
 	},
 
 	renderers: {
@@ -15,13 +16,15 @@ TrelloPro.config = {
 		labels: function(capture) { return capture.replace('[','').replace(']',''); },
 		hashtags: function(capture) { return ' ' +capture },
 		time_entries: function(capture) { return capture.replace('{','').replace('}',''); },
-		points: function(capture) { return capture.split('|').join(''); }
+		points: function(capture) { return capture.split('|').join(''); },
+		price_entries: function(capture) { return capture.replace('$','').replace('$',''); },
 	},
 
 	symbols: {
 		label: '<i class="fa fa-tag" aria-hidden="true"></i>',
 		time_entry: '<i class="fa fa-hourglass-1" aria-hidden="true"></i>',
 		point: '<i class="fa fa-star" aria-hidden="true"></i>',
+		price_entry: '<i class="fa fa-money" aria-hidden="true"></i>',
 	},
 
 	defaultSettings: {
@@ -32,6 +35,7 @@ TrelloPro.config = {
 		'parse-hashtags': false,
 		'parse-time-entries': false,
 		'parse-priority-marks': false,
+		'parse-price-entries': false,
 
 		'parse-points': false,
 		'parse-markup': false,

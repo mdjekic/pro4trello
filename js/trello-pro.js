@@ -79,6 +79,21 @@ let sumTimeEntries = function(startTime, endTime) {
   return hours_str + ':' + minutes_str;
 }
 
+
+/**
+ * Sums 2 number/prices
+ *
+ * @param {string} price1
+ * @param {string} price2
+ * @return {string}
+ */
+let sumPrices = function (price1, price2) {
+	let p1 = parseFloat(price1);
+	let p2 = parseFloat(price2);
+	let price = (p1 + p2).toFixed(2);
+	return price.toString();
+}
+
 /**
  * Prepares a given string name to be used as a HTML attribute
  *
@@ -196,6 +211,13 @@ let processCardTitleChange = function ($title,refreshData) {
 	      });
 	    }
 
+	    // prices 
+	    if (TrelloPro.settings['parse-price-entries']) {
+		  html = html.replace(TrelloPro.config.regex.price_entries, function (match, capture) {
+		    return '<div class="badge tpro-tag tpro-price-entry">' + TrelloPro.config.symbols.price_entry + ' ' + TrelloPro.config.renderers.price_entries(capture) + '</div>';
+		  });
+		}
+
 	    // priority marks
 	    if (TrelloPro.settings['parse-priority-marks']) {
 	      let priorityCount = (html.match(/\!/g) || []).length;
@@ -213,14 +235,14 @@ let processCardTitleChange = function ($title,refreshData) {
 	      }
 	    }
 
-			// markup
-			if (TrelloPro.settings['parse-markup']) {
-				html = html
-				  .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-			    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-					.replace(/_(.+?)_/g, '<em>$1</em>')
-			    .replace(/~~(.+?)~~/g, '<strike>$1</strike>')
-			    .replace(/\`(.+?)\`/g, '<code>$1</code>');
+		// markup
+		if (TrelloPro.settings['parse-markup']) {
+			html = html
+				.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+			.replace(/\*(.+?)\*/g, '<em>$1</em>')
+				.replace(/_(.+?)_/g, '<em>$1</em>')
+			.replace(/~~(.+?)~~/g, '<strike>$1</strike>')
+			.replace(/\`(.+?)\`/g, '<code>$1</code>');
 	    }
 
 	    // wrap HTML
@@ -582,6 +604,19 @@ let refreshListsAndStats = function() {
 			let t = jQuery.trim(jQuery(this).text());
 			list.totalVisibleTime = sumTimeEntries(list.totalVisibleTime, t);
     });
+
+	// count price
+    list.totalPrice = '0.00';
+	list.totalVisiblePrice = '0.00';
+	$this.find('.tpro-price-entry').each(function(){
+		let t = jQuery.trim(jQuery(this).text());
+		list.totalPrice = sumPrices(list.totalPrice, t);
+	});
+	$this.find('.list-card').filter(visibleFilter).find('.tpro-price-entry').each(function(){
+		let t = jQuery.trim(jQuery(this).text());
+		list.totalVisiblePrice = sumPrices(list.totalVisiblePrice, t);
+	});
+	
 
     // count checklist tasks
     list.totalTasks = 0;
@@ -1391,6 +1426,15 @@ let buildListStats = function($list,list) {
 				+'</span>');
 		}
 
+		// price entries
+		if(TrelloPro.settings['parse-price-entries']) {
+			$stats.append(
+				'<span class="tpro-stat price-sum" title="Total Price">'
+					+'<i class="fa fa-money" aria-hidden="true"></i> '
+					+'<span></span>'
+				+'</span>');
+		}
+
 		// progress bar
 		if(TrelloPro.settings['show-list-stats-progressbar']) {
 			$stats.append(
@@ -1420,6 +1464,12 @@ let buildListStats = function($list,list) {
 	$stats.find('.tpro-stat.time-sum span').text(list.totalVisibleTime == list.totalTime
 		? list.totalTime
 		: list.totalVisibleTime + '/' + list.totalTime
+	);
+
+	// price sum
+	$stats.find('.tpro-stat.price-sum span').text(list.totalVisiblePrice == list.totalPrice
+		? list.totalPrice
+		: list.totalVisiblePrice + '/' + list.totalPrice
 	);
 
   // tasks count

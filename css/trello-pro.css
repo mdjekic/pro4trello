@@ -65,6 +65,14 @@
 }
 .tpro-tag.tpro-time-entry i { color: darkviolet; }
 
+
+.tpro-tag.tpro-price-entry {
+  font-weight: bold;
+  font-size: 11px;
+  border-radius: 3px;
+} 
+.tpro-tag.tpro-price-entry i { color: green; }
+
 .tpro-tag.tpro-point {
   font-weight: bold;
   font-size: 11px;
@@ -119,6 +127,7 @@ body.tpro-show-list-stats .list { border-top-left-radius: 0px; border-top-right-
 .tpro-list-stats .tpro-stat.points i { color: #3498db; }
 .tpro-list-stats .tpro-stat.checklist i { color: #c0392b; }
 .tpro-list-stats .tpro-stat.time-sum i { color: darkviolet; }
+.tpro-list-stats .tpro-stat.price-sum i { color: green; }
 
 .list-wrapper.ui-sortable-helper .tpro-list-stats {
   cursor:-webkit-grabbing;
