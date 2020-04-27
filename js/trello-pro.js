@@ -808,7 +808,7 @@ let buildMenu = function () {
 	$list.append('<li><a class="js-select light-hover" href="#" data-action="support"><i class="fa fa-book" style="color: #6c5ce7; float:right; padding-top: 3px;"></i>Get Support</a></li>');
 	$list.append('<li><hr /></li>');
 	$list.append('<li><a class="js-select light-hover" href="#" data-action="share"><i class="fa fa-heart" style="color: #d63031; float:right; padding-top: 3px;"></i>Share the Love</a></li>');
-	$list.append('<li><a class="js-select light-hover" href="#" data-action="donate" style="background-color: #ffeaa7"><i class="fa fa-beer" style="color: #F79F1F; float:right; padding-top: 3px;"></i>Donate to Author</a></li>');
+	$list.append('<li><a class="js-select light-hover" href="#" data-action="donate" style="background-color: #ffeaa7"><i class="fa fa-beer" style="color: #F79F1F; float:right; padding-top: 3px;"></i>Support Author</a></li>');
 	$popup.append('<hr />');
 	$popup.append(jQuery('<div style="text-align:center"></div>').append(jQuery('<label for="tpro-toggle-hide-footer">Auto-hide footer</label>').prepend($toggleFooter)));
 
@@ -854,7 +854,7 @@ let buildMenu = function () {
 				loadSharePane();
 				break;
 			case 'donate':
-				window.open(chrome.runtime.getURL('docs/donate.html'), '_blank');
+				window.open(chrome.runtime.getURL('docs/support.html'), '_blank');
 				break;
 		}
 
