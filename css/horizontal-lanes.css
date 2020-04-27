@@ -1,0 +1,29 @@
+#board {
+    position: relative;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.js-list {
+    position: relative;
+    width: 99% !important;
+    display: block;
+    margin-bottom: 10px !important;
+}
+
+@media(min-width: 1080px) {
+    .tpro-list-stats .progress-bar-wrapper {        
+        margin-top: 10px !important;
+    }
+}
+
+#tpro-footer {
+    width: 99%;
+    position: fixed;
+    bottom: 0;    
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+.tpro-show-list-stats .list-wrapper {
+    padding-bottom: 10px !important;
+}
