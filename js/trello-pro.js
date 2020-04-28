@@ -101,7 +101,7 @@ let calculatePrice = function (price1, price2) {
  */
 let renderAttrName = function (name) {
 	return name.toLowerCase()
-		.replace(/[!@#$%^&*(),.?":{}|<> ]/gi, '-')
+		.replace(/[!@#$%^&*(),.?":{}|<> ]/gi, '-') // special characters
 		.replace(/(-)(?=.*\1)/g, "");
 }
 
@@ -1674,7 +1674,9 @@ let loadCss = function () {
  * @return {Promise}
  */
 let parseCurrentCards = function () {
+	if (TrelloPro.boardId === null) return;
 	log('parsing current cards...');
+	
 	let $initCards = jQuery('.list-card-title');
 	let promises = [];
 	for (let i = 0; i < $initCards.length; i++) {
@@ -1684,15 +1686,49 @@ let parseCurrentCards = function () {
 }
 
 /**
+ * Attempts to load board information via card
+ * 
+ * @return {Object}
+ */
+let loadBoardInfoViaCard = function() {
+	let cardId = window.location.href.split('/')[4];	
+	
+	let card = null;
+	$.ajax({url: 'https://trello.com/1/cards/' + cardId, async: false, success: result => {
+		card = result;
+	}});
+	if (card == null) return { id: null, title: null };
+
+	let board = null;
+	$.ajax({
+		url: 'https://trello.com/1/boards/' + card.idBoard, async: false, success: result => {
+			board = result;
+			boardId = card.idBoard;
+		}
+	});
+	if (board == null) return { id: null, title: null};
+
+	return { id: board.shortUrl.split('/')[4], title: board.name }
+}
+
+/**
  * Loads Pro4Trello
  */
-let loadBoard = function () {
-	// load for boards only
-	if (window.location.href.split('/')[3] != 'b') return;
+let loadBoard = function () {	
+	let boardId = null;
+	let boardTitle = null;
+	
+	if (window.location.href.split('/')[3] == 'b') { // boards only
+		boardId = window.location.href.split('/')[4];
+		boardTitle = jQuery.trim(jQuery('title').text());
+	} else if (window.location.href.split('/')[3] == 'c') { // cards
+		let info = loadBoardInfoViaCard();
+		boardId = info.id;
+		boardTitle = info.title;
+	}
 
-	// get board ID and title
-	let boardId = window.location.href.split('/')[4];
-	let boardTitle = jQuery.trim(jQuery('title').text());
+	// ignore if no board
+	if(boardId === null) return;
 
 	// prevent double loading
 	if (TrelloPro.boardId == boardId) return;
@@ -1761,7 +1797,7 @@ let loadBoard = function () {
  * Initializes the content script
  */
 let tpro = function () {
-	log('Pro4Trello intiialized...');
+	log('Pro4Trello components initializing...');
 	TrelloPro.refreshing = false;
 
 	// introduce dynamic styles
@@ -1834,7 +1870,8 @@ let tpro = function () {
 			return;
 		}
 
-		loadBoard();
+		log('board changed');
+		setTimeout(loadBoard, 500); // delay to allow cards to load!
 	});
 
 	// react on card title changes
@@ -1842,14 +1879,18 @@ let tpro = function () {
 		//if(!TrelloPro.loaded) return;
 		let $card = jQuery(this).parents('.list-card');
 		if ($card.hasClass('placeholder') || $card.css('position') == 'absolute') return;
-		processCardTitleChange($card.find('.list-card-title'), false);
+		if(TrelloPro.boardId !== null) {
+			processCardTitleChange($card.find('.list-card-title'), false);
+		}		
 	});
 
 	// react on list title changes
 	jQuery(document).on('blur', '.list-header-name', function (e) {
 		if (!TrelloPro.loaded) return;
 		let $list = jQuery(this).parents('.list-wrapper');
-		processListTitleChange($list);
+		if (TrelloPro.boardId !== null) {
+			processListTitleChange($list);
+		}		
 	});
 
 	// bind add element
@@ -1858,7 +1899,9 @@ let tpro = function () {
 		let $card = jQuery(e.target);
 		if (!$card.hasClass('list-card') || $card.hasClass('placeholder') || $card.css('position') == 'absolute') return;
 		//processCardTitleChange($card.find('.list-card-title'),true);
-		processCardTitleChange($card.find('.list-card-title'), false);
+		if (TrelloPro.boardId !== null) {
+			processCardTitleChange($card.find('.list-card-title'), false);
+		}
 	});
 
 	// bind mouse movements for show/hide footer
