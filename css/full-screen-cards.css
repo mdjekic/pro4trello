@@ -1,14 +1,17 @@
 .window {
     width: 100% !important;
-		margin: 0 !important;
-		padding-right: 176px !important; /* 168 + 8 */
+    height: 100%;
+    margin: 0 !important;
+    padding-right: 176px !important;
+    /* 168 + 8 */
+    overflow: scroll !important;
 }
 
 .window-main-col {
-	width: 95% !important;
+    width: 95% !important;
 }
 
 .window-sidebar {
-	position: absolute;
-	right: 0;
+    position: absolute;
+    right: 0;
 }
