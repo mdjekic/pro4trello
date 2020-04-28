@@ -5,7 +5,8 @@ TrelloPro.config = {
 	regex: {
 		tags: [/(.*\ \:\:\ )/,/(.*\ \|\ )/],
 		labels: /(\[[^\]]*\])/g,
-		hashtags: /\W(\#[a-zA-Z]+\b)(?!;)/gm,
+		//hashtags: /\W(\#[a-zA-Z]+\b)(?!;)/gm,
+		hashtags: /(\#[^!@#\$%\^&\*\(\)\{\}\?<>\+:;",\.\\ ]+\b)/gm,
 		time_entries: /(\{[^\}]*\})/g,
 		points: /(\|[^\}]*\|)/g,
 		price_entries: /(\$[^\}]*\$)/g,
