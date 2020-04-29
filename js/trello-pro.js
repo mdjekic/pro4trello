@@ -1656,8 +1656,7 @@ let loadCss = function () {
 		}
 
 		toggleCssInject('visible-card-numbers');
-		toggleCssInject('visible-labels');
-		toggleCssInject('hide-activity-entries');
+		toggleCssInject('visible-labels');		
 		toggleCssInject('full-screen-cards');
 		toggleCssInject('hide-add-list');
 		toggleCssInject('beautify-markdown');
