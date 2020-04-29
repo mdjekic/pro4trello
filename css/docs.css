@@ -59,3 +59,19 @@ div.pro-tip i {
   font-size: 16px;
   color: #2980b9;
 }
+
+#patreon {
+  background-color: rgb(232, 91, 70);
+  border: 1px solid white;
+  color: white;
+  text-decoration: none;
+  border-radius: 5%;
+  padding: 10px;
+  font-size: 18px;
+}
+
+#patreon:hover {
+  background-color: white;
+  border: 1px solid rgb(232, 91, 70);
+  color: rgb(232, 91, 70);;
+}
