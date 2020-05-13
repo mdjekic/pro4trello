@@ -392,7 +392,18 @@ let rebuildDynamicStyles = function () {
 }
 
 /**
- * Attempts to store in sync storrage
+ * Attempts to retrieve from local|sync storrage
+ *
+ * @param {string} key
+ * @param {*} callback
+ */
+let retrieve = function (key,callback) {
+	// TODO check if board is in "sync"	
+	chrome.storage.local.get(key, callback);
+}
+
+/**
+ * Attempts to store in local|sync storrage
  *
  * @param {string} key
  * @param {object} value
@@ -400,7 +411,8 @@ let rebuildDynamicStyles = function () {
 let store = function (key, value) {
 	let storrage = {};
 	storrage[key] = value;
-	chrome.storage.sync.set(storrage);
+	// TODO check if board is in "sync"
+	chrome.storage.local.set(storrage);
 }
 
 /**
@@ -1740,8 +1752,8 @@ let loadBoard = function () {
 	log('loading settings for board "' + boardId + '"...');
 
 	// load settings
-	TrelloPro.settings = TrelloPro.config.defaultSettings; // TODO get 'data_'+TrelloPro.boardId
-	chrome.storage.sync.get(['defaults', TrelloPro.boardId, 'autohide'], function (settings) {
+	TrelloPro.settings = TrelloPro.config.defaultSettings; // TODO get 'data_'+TrelloPro.boardId	
+	retrieve(['defaults', TrelloPro.boardId, 'autohide'], function (settings) {
 		log('[loaded board settings]');
 
 		// set board-specific settings flag
