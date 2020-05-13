@@ -739,7 +739,7 @@ let buildSettingsPane = function () {
 			saveSettings();
 			TrelloPro.$settingsPane.fadeOut(150);
 			jQuery('#board').show();
-			//TrelloPro.$footer.show();
+			TrelloPro.$footer.show();
 		});
 
 		// attach save button behaviour
