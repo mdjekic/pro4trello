@@ -920,6 +920,42 @@ let buildMenu = function () {
 }
 
 /**
+ * Builds the TrelloPro sync button
+ */
+let buildSyncButton = function () {
+	log('building sync button...');	
+
+	let $button = jQuery('<a id="tpro-sync-button" class="board-header-btn calendar-btn" href="#"><span class="icon-sm icon-sync board-header-btn-icon"></span></a>');
+	$button.on('click', function (e) {
+		let $this = jQuery(this);
+		// TODO do stuff
+		e.preventDefault();
+		return false;
+	});
+
+	$button.appendTo(TrelloPro.$footer.find('.board-header-btns.mod-right'));
+}
+
+/**
+ * Builds the TrelloPro notifications button
+ */
+let buildNotificationsButton = function () {
+	log('building notifications button...');	
+
+	// background-color: #eb5a46!important
+
+	let $button = jQuery('<a id="tpro-notifications-button" class="board-header-btn calendar-btn" href="#"><span class="icon-sm icon-notification board-header-btn-icon"></span></a>');
+	$button.on('click', function (e) {
+		let $this = jQuery(this);
+		// TODO do stuff
+		e.preventDefault();
+		return false;
+	});
+
+	$button.appendTo(TrelloPro.$footer.find('.board-header-btns.mod-right'));
+}
+
+/**
  * Builds a popup
  *
  * @param {string} id
@@ -1825,6 +1861,8 @@ let loadBoard = function () {
 					buildHashtagsFilter();
 					rebuildDynamicStyles();
 					buildSettingsPane();
+					//buildNotificationsButton();
+					//buildSyncButton();
 					buildMenu();
 				})
 		}, 500);
