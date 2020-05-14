@@ -21,14 +21,14 @@ function updateSettings() {
   });
 
   let storage = {};
-  storage[boardId] = boardSettings;
-  chrome.storage.sync.set(storage);
+  storage['board_' + boardId] = boardSettings;
+  chrome.storage.local.set(storage); // TODO what about sync
 }
 
 function loadSettings() {
   boardId = window.location.hash.replace('#b=','');
-  chrome.storage.sync.get(['defaults',boardId], function (globalSettings) {
-    boardSettings = globalSettings[boardId];
+  chrome.storage.local.get(['defaults','board_' + boardId], function (globalSettings) {  // TODO what about sync
+    boardSettings = globalSettings['board_' + boardId];
     if(boardSettings) {
       applySettings(boardSettings);
     } else {
