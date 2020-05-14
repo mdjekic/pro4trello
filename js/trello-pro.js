@@ -420,7 +420,7 @@ let store = function (key, value) {
  */
 let saveSettings = function () {
 	log('saving board settings...');
-	store(TrelloPro.boardId, TrelloPro.settings);
+	store('board_' + TrelloPro.boardId, TrelloPro.settings);
 }
 
 /**
@@ -1753,7 +1753,7 @@ let loadBoard = function () {
 
 	// load settings
 	TrelloPro.settings = TrelloPro.config.defaultSettings; // TODO get 'data_'+TrelloPro.boardId	
-	retrieve(['defaults', TrelloPro.boardId, 'autohide'], function (settings) {
+	retrieve(['defaults', 'board_' + TrelloPro.boardId, 'autohide'], function (settings) {
 		log('[loaded board settings]');
 
 		// set board-specific settings flag
