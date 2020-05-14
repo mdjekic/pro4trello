@@ -4,6 +4,10 @@
 
 var TrelloPro = TrelloPro || {};
 
+TrelloPro.globals = {
+	syncBoards: []
+};
+
 TrelloPro.boardId = null;
 TrelloPro.boardTitle = null;
 
@@ -398,8 +402,12 @@ let rebuildDynamicStyles = function () {
  * @param {*} callback
  */
 let retrieve = function (key,callback) {
-	// TODO check if board is in "sync"	
-	chrome.storage.local.get(key, callback);
+	// check if board is synchronized
+	if(TrelloPro.globals.syncBoards.indexOf(TrelloPro.boardId) >= 0) {
+		chrome.storage.sync.get(key, callback);
+	} else {
+		chrome.storage.local.get(key, callback);
+	}	
 }
 
 /**
@@ -411,7 +419,9 @@ let retrieve = function (key,callback) {
 let store = function (key, value) {
 	let storrage = {};
 	storrage[key] = value;
-	// TODO check if board is in "sync"
+	if(TrelloPro.globals.syncBoards.indexOf(TrelloPro.boardId) >= 0) {
+		chrome.storage.sync.set(storrage);	
+	}
 	chrome.storage.local.set(storrage);
 }
 
@@ -455,6 +465,25 @@ let getListEnchancement = function (list, key) {
 		return TrelloPro.settings.listEnchancements[list][key];
 	}
 	return false;
+}
+
+/**
+ * Loads globals
+ *
+ * @param {*} callback
+ */
+let loadGlobals = function (callback) {
+	log('loading globals from sync...');
+	chrome.storage.sync.get('globals', function(data) {
+		let globals = data.hasOwnProperty('globals') ? data['globals'] : {};
+		log({globals});
+		for(let key in TrelloPro.globals) {
+			if(globals.hasOwnProperty(key)) {
+				TrelloPro.globals[key] = globals[key];
+			}
+		}
+		if(typeof callback == 'function') callback();
+	});
 }
 
 // -----------------------------------------------------------------------------
@@ -1757,11 +1786,13 @@ let loadBoard = function () {
 		log('[loaded board settings]');
 
 		// set board-specific settings flag
-		TrelloPro.settingsOverride = settings[TrelloPro.boardId] ? true : false;
+		TrelloPro.settingsOverride = settings['board_' + TrelloPro.boardId] ? true : false;
 
 		// get defaults and board-specific settings
 		let defaults = settings['defaults'] ? settings['defaults'] : {};
-		let boardSettings = settings[TrelloPro.boardId] ? settings[TrelloPro.boardId] : {};
+		let boardSettings = settings['board_' +TrelloPro.boardId] ? settings['board_' +TrelloPro.boardId] : {};
+
+		log(boardSettings);
 
 		// set auto-hide settings
 		TrelloPro.autoHideFooter = settings['autohide'];
@@ -2001,6 +2032,12 @@ let tpro = function () {
 		setTimeout(triggerRefreshListStats, 7500);
 	})();
 
+	// refresh pro4trello globals every 5 minutes
+	(refreshGlobals = function () {
+		loadGlobals();		
+		setTimeout(refreshGlobals, 60000);
+	})();
+
 	// // check if a card is opened directly
 	// if(window.location.href.split('/')[3] == 'c') {
 	//   chrome.storage.local.set({ 'tpro-redirect': window.location.href });
@@ -2021,4 +2058,4 @@ let tpro = function () {
 	// }
 };
 
-tpro();
+loadGlobals(tpro);
