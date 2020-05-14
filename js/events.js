@@ -15,7 +15,7 @@ chrome.runtime.onInstalled.addListener(function(details){
 				let migrate = {};
 				chrome.storage.sync.get(function(data){					
 					for(let key in data) {
-						if(key == 'autohidie' || key.indexOf('lists_') == 0 || key.indexOf('data_') == 0) {
+						if(key == 'autohide' || key.indexOf('lists_') == 0 || key.indexOf('data_') == 0) {
 							migrate[key] = data[key];
 							continue;
 						}
