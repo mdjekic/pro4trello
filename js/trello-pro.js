@@ -2,6 +2,9 @@
 // Init
 // -----------------------------------------------------------------------------
 
+const MAX_BOARDS = 5;
+const STORAGE_KEYS = ['board_','data_','lists_'];
+
 var TrelloPro = TrelloPro || {};
 
 TrelloPro.globals = {
@@ -25,9 +28,13 @@ TrelloPro.data = {
 TrelloPro.lists = [];
 
 TrelloPro.$dynamicStyles = null;
+TrelloPro.$footer = null;
+TrelloPro.$syncButton = null;
 
 TrelloPro.loaded = false;
 TrelloPro.refreshing = false;
+
+TrelloPro.syncBoards = [];
 
 // -----------------------------------------------------------------------------
 // Utility
@@ -128,9 +135,8 @@ let toggleCssInject = function (name) {
  *
  * @param {object} object
  */
-let log = function (object) {
-	return;
-	console.log(object);
+let log = function (object) {	
+	//console.log(object);
 };
 
 /**
@@ -468,21 +474,83 @@ let getListEnchancement = function (list, key) {
 }
 
 /**
- * Loads globals
+ * Refreshes sync boards data
  *
  * @param {*} callback
  */
-let loadGlobals = function (callback) {
+let refreshSyncBoards = function(onComplete) {
+	log('refreshing sync boards...');
+
+	let updated = false;
+	if(TrelloPro.syncBoards.length == 0) updated = true;
+	else if(TrelloPro.syncBoards.length != TrelloPro.globals.syncBoards.length) updated = true;
+	else for(let i in TrelloPro.syncBoards) {
+		if(TrelloPro.globals.syncBoards.length <= i) {
+			updated = true;
+			break;
+		}
+		if(TrelloPro.syncBoards[i].id !== TrelloPro.globals.syncBoards[i]) {
+			updated = true;
+			break;
+		}
+	}
+
+	if(!updated) {
+		if(typeof onComplete == 'function') onComplete();
+		return;
+	}
+
+	log('updating sync boards...');
+
+	let promises = [];
+	TrelloPro.syncBoards = [];
+	for(let i in TrelloPro.globals.syncBoards) {
+		let boardId = TrelloPro.globals.syncBoards[i];
+		promises.push(new Promise((confirm,reject) => {
+			let board = null;
+			jQuery.ajax({
+				url: 'https://trello.com/1/boards/' + boardId, 
+				success: board => {
+					TrelloPro.syncBoards.push({id: boardId, name: board.name, url: board.url });	
+					confirm();
+				}, error: () => {
+					confirm();
+				}
+			});
+			if (board == null) return { id: null, title: null};
+		}))
+	}
+
+	// indicate sync status in sync button
+	if(TrelloPro.$syncButton !== null) {
+		TrelloPro.$syncButton.find('span').css('color',TrelloPro.globals.syncBoards.indexOf(TrelloPro.boardId) >= 0 ? '#f2d600' : 'inherit')
+	}	
+
+	Promise.all(promises).then(() => {
+		if(typeof onComplete == 'function') onComplete();
+	});	
+};
+
+/**
+ * Loads globals
+ *
+ * @param {*} onComplete
+ */
+let loadGlobals = function (onComplete) {
 	log('loading globals from sync...');
-	chrome.storage.sync.get('globals', function(data) {
-		let globals = data.hasOwnProperty('globals') ? data['globals'] : {};
-		log({globals});
-		for(let key in TrelloPro.globals) {
-			if(globals.hasOwnProperty(key)) {
-				TrelloPro.globals[key] = globals[key];
+
+	let keys = ['syncBoards'];
+
+	chrome.storage.sync.get(keys, function(data) {
+		for(let i in keys) { 
+			let key = keys[i];
+			if(data.hasOwnProperty(key)) {
+				TrelloPro.globals[key] = data[key];
 			}
 		}
-		if(typeof callback == 'function') callback();
+
+		if(typeof onComplete == 'function') refreshSyncBoards(onComplete);
+		else refreshSyncBoards();
 	});
 }
 
@@ -920,20 +988,139 @@ let buildMenu = function () {
 }
 
 /**
+ * Builds the TrelloPro sync button and initializes it into the popup
+ * 
+ * @param {*} onComplete
+ */
+let loadSyncContent = function(onComplete) {
+	let $popup = jQuery('#tpro-sync-popup');
+	loadGlobals(() => {
+		let $list = $popup.find('.pop-over-list').html('');
+		for(let i in TrelloPro.syncBoards) {
+			let board = TrelloPro.syncBoards[i];
+			let $li = jQuery('<li style="padding:5px;"></li>').attr('data-board',board.id);
+			$li.append(jQuery('<strong onclick="window.open(this.getAttribute(\'data-href\'))" style="cursor: pointer"></strong>').text(board.name).attr('data-href',board.url));
+			$li.append(jQuery('<span style="float:right; cursor:pointer;" class="icon-sm icon-close tpro-unsync-board-button"></span>'));			
+			$list.append($li);
+		}
+
+		let $noBoards = $popup.find('.tpro-sync-no-boards');		
+		if(TrelloPro.syncBoards.length == 0) {
+			$noBoards.show();
+		} else {
+			$noBoards.hide();
+		}
+
+		let $syncButton = $popup.find('.tpro-sync-board-button');		
+		if(TrelloPro.syncBoards.length < MAX_BOARDS && TrelloPro.globals.syncBoards.indexOf(TrelloPro.boardId) < 0) {
+			$syncButton.show();
+		} else {
+			$syncButton.hide();
+		}
+
+		if(typeof onComplete == 'function') onComplete();
+	});
+};
+
+/**
  * Builds the TrelloPro sync button
  */
 let buildSyncButton = function () {
 	log('building sync button...');	
 
-	let $button = jQuery('<a id="tpro-sync-button" class="board-header-btn calendar-btn" href="#"><span class="icon-sm icon-sync board-header-btn-icon"></span></a>');
-	$button.on('click', function (e) {
+	// prepare popup
+	let $popup = buildPopup('tpro-sync-popup', 'Synchronize Boards');		
+	let $syncButton = jQuery('<a class="subtle button tpro-sync-board-button" href="#">Sync this board</a>');
+	$popup.append('<div class="tpro-sync-no-boards" style="padding: 10px">None of your boards are synchronized at the moment.</div>')
+	$popup.append(jQuery('<div style="text-align: center"></div>').append($syncButton));
+	$popup.append('<hr /><div style="text-align: center"><a href="#">What is this?</a></div>');
+
+	TrelloPro.$syncButton = jQuery('<a id="tpro-sync-button" class="board-header-btn calendar-btn" href="#"><span class="icon-sm icon-sync board-header-btn-icon"></span></a>');
+	if(TrelloPro.globals.syncBoards.indexOf(TrelloPro.boardId) >= 0) {
+		TrelloPro.$syncButton.find('span').css('color','#f2d600');
+	}
+	TrelloPro.$syncButton.on('click', function (e) {
 		let $this = jQuery(this);
-		// TODO do stuff
+		if ($popup.is(':visible')) { $popup.hide(); }
+		else {
+			if(TrelloPro.$syncButton.hasClass('disabled')) return;
+			TrelloPro.$syncButton.addClass('disabled');
+			loadSyncContent(() => {
+				$popup.css({
+					top: $this.position().top + $this.offset().top + $this.outerHeight(true) - $popup.height(),
+					right: 10
+				}).show();
+				TrelloPro.$syncButton.removeClass('disabled');
+			});
+		}
 		e.preventDefault();
 		return false;
 	});
 
-	$button.appendTo(TrelloPro.$footer.find('.board-header-btns.mod-right'));
+	$syncButton.on('click', function(e) {
+		e.preventDefault();
+		if($syncButton.hasClass('disabled')) return;
+
+		$syncButton.addClass('disabled');
+		loadGlobals(() => {
+			if(TrelloPro.globals.syncBoards.indexOf(TrelloPro.boardId) >= 0 || TrelloPro.globals.syncBoards.length == MAX_BOARDS) {
+				$syncButton.removeClass('disabled');
+				$popup.hide(); TrelloPro.$syncButton.click();
+			} else {
+				TrelloPro.globals.syncBoards.push(TrelloPro.boardId);
+				
+				// copy settings to sync
+				let keys = STORAGE_KEYS.map((key) => { return key + TrelloPro.boardId});
+				chrome.storage.local.get(keys, (data) => {
+					let sync = {syncBoards: TrelloPro.globals.syncBoards};
+					for(let i in keys) {
+						let key = keys[i];
+						if(data.hasOwnProperty(key)) sync[key] = data[key];
+					}
+
+					// finally update the global and store all settings
+					chrome.storage.sync.set(sync, () => {
+						$syncButton.removeClass('disabled');
+						$popup.hide(); TrelloPro.$syncButton.click();
+					});
+				});						
+			}			
+		});
+
+		return false;
+	});
+
+	$popup.on('click', '.tpro-unsync-board-button', function(e) {
+		e.preventDefault();
+		let $this = jQuery(this);
+		if($this.hasClass('disabled')) return;
+
+		let boardId = $this.parents('li').attr('data-board');
+
+		$this.addClass('disabled');
+		loadGlobals(() => {
+			let index = TrelloPro.globals.syncBoards.indexOf(boardId);
+			if(index < 0) {
+				$popup.hide(); TrelloPro.$syncButton.click();
+			} else {
+				TrelloPro.globals.syncBoards.splice(index,1);
+										
+				// update the global
+				chrome.storage.sync.set({syncBoards: TrelloPro.globals.syncBoards}, () => {
+					// remove settings from sync
+					let keys = STORAGE_KEYS.map((key) => { return key + boardId});			
+					chrome.storage.sync.remove(keys,() => {
+						$syncButton.removeClass('disabled');
+						$popup.hide(); TrelloPro.$syncButton.click();
+					});
+				});
+			}
+		});
+
+		return false;
+	});
+
+	TrelloPro.$syncButton.appendTo(TrelloPro.$footer.find('.board-header-btns.mod-right'));
 }
 
 /**
@@ -1770,13 +1957,13 @@ let loadBoardInfoViaCard = function() {
 	let cardId = window.location.href.split('/')[4];	
 	
 	let card = null;
-	$.ajax({url: 'https://trello.com/1/cards/' + cardId, async: false, success: result => {
+	jQuery.ajax({url: 'https://trello.com/1/cards/' + cardId, async: false, success: result => {
 		card = result;
 	}});
 	if (card == null) return { id: null, title: null };
 
 	let board = null;
-	$.ajax({
+	jQuery.ajax({
 		url: 'https://trello.com/1/boards/' + card.idBoard, async: false, success: result => {
 			board = result;
 			boardId = card.idBoard;
@@ -1826,9 +2013,7 @@ let loadBoard = function () {
 
 		// get defaults and board-specific settings
 		let defaults = settings['defaults'] ? settings['defaults'] : {};
-		let boardSettings = settings['board_' +TrelloPro.boardId] ? settings['board_' +TrelloPro.boardId] : {};
-
-		log(boardSettings);
+		let boardSettings = settings['board_' + TrelloPro.boardId] ? settings['board_' + TrelloPro.boardId] : {};
 
 		// set auto-hide settings
 		TrelloPro.autoHideFooter = settings['autohide'];
@@ -1862,7 +2047,7 @@ let loadBoard = function () {
 					rebuildDynamicStyles();
 					buildSettingsPane();
 					//buildNotificationsButton();
-					//buildSyncButton();
+					buildSyncButton();
 					buildMenu();
 				})
 		}, 500);
@@ -2071,9 +2256,11 @@ let tpro = function () {
 	})();
 
 	// refresh pro4trello globals every 5 minutes
-	(refreshGlobals = function () {
-		loadGlobals();		
-		setTimeout(refreshGlobals, 60000);
+	(refreshGlobals = function () {		
+		setTimeout(() => {
+			loadGlobals();
+			refreshGlobals();
+		}, 60000);
 	})();
 
 	// // check if a card is opened directly

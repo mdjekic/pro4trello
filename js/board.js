@@ -1,5 +1,13 @@
 var boardId;
 var boardSettings;
+var boardSync = false;
+
+function updateBoardSync(onComplete) {
+  chrome.storage.sync.get('syncBoards',(data) => {
+    boardSync = data.hasOwnProperty('syncBoards') && data.syncBoards.indexOf(boardId) >= 0;    
+    onComplete();
+  });
+}
 
 function updateSettings() {
   // handle checkboxes
@@ -20,20 +28,26 @@ function updateSettings() {
     boardSettings[radio.attr('name')] = radio.val();
   });
 
-  let storage = {};
-  storage['board_' + boardId] = boardSettings;
-  chrome.storage.local.set(storage); // TODO what about sync
+  updateBoardSync(() => {
+    let data = {};
+    data['board_' + boardId] = boardSettings;
+    chrome.storage.local.set(data);
+    if(boardSync) chrome.storage.sync.set(data);
+  });  
 }
 
 function loadSettings() {
-  boardId = window.location.hash.replace('#b=','');
-  chrome.storage.local.get(['defaults','board_' + boardId], function (globalSettings) {  // TODO what about sync
-    boardSettings = globalSettings['board_' + boardId];
-    if(boardSettings) {
-      applySettings(boardSettings);
-    } else {
-      boardSettings = {};
-    }
+  updateBoardSync(() => {
+    boardId = window.location.hash.replace('#b=','');
+    let storage = boardSync ? chrome.storage.sync : chrome.storage.local;
+    storage.get(['defaults','board_' + boardId], function (globalSettings) {
+      boardSettings = globalSettings['board_' + boardId];
+      if(boardSettings) {
+        applySettings(boardSettings);
+      } else {
+        boardSettings = {};
+      }
+    });
   });
 }
 
