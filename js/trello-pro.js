@@ -2003,55 +2003,58 @@ let loadBoard = function () {
 	rebuildDynamicStyles();
 	log('loading settings for board "' + boardId + '"...');
 
-	// load settings
-	TrelloPro.settings = TrelloPro.config.defaultSettings; // TODO get 'data_'+TrelloPro.boardId	
-	retrieve(['defaults', 'board_' + TrelloPro.boardId, 'autohide'], function (settings) {
-		log('[loaded board settings]');
+	// load defaults from SYNC
+	chrome.storage.sync.get('defaults',  sync => {
+		log('[loaded defaults]');
+		let defaults = sync['defaults'] ? sync['defaults'] : {};
 
-		// set board-specific settings flag
-		TrelloPro.settingsOverride = settings['board_' + TrelloPro.boardId] ? true : false;
+		// load settings
+		TrelloPro.settings = TrelloPro.config.defaultSettings; // TODO get 'data_'+TrelloPro.boardId	
+		retrieve(['board_' + TrelloPro.boardId, 'autohide'], function (settings) {
+			log('[loaded board settings]');
 
-		// get defaults and board-specific settings
-		let defaults = settings['defaults'] ? settings['defaults'] : {};
-		let boardSettings = settings['board_' + TrelloPro.boardId] ? settings['board_' + TrelloPro.boardId] : {};
+			// prep board-specific settings
+			TrelloPro.settingsOverride = settings['board_' + TrelloPro.boardId] ? true : false;
+			let boardSettings = settings['board_' + TrelloPro.boardId] ? settings['board_' + TrelloPro.boardId] : {};
 
-		// set auto-hide settings
-		TrelloPro.autoHideFooter = settings['autohide'];
-		if (typeof TrelloPro.autoHideFooter !== 'boolean') {
-			TrelloPro.autoHideFooter = false;
-		}
+			// set auto-hide settings
+			TrelloPro.autoHideFooter = settings['autohide'];
+			if (typeof TrelloPro.autoHideFooter !== 'boolean') {
+				TrelloPro.autoHideFooter = false;
+			}
 
-		// merge settings
-		TrelloPro.settings = jQuery.extend({}, TrelloPro.settings, defaults);
-		TrelloPro.settings = jQuery.extend({}, TrelloPro.settings, boardSettings);
+			// merge settings
+			TrelloPro.settings = jQuery.extend({}, TrelloPro.settings, defaults);
+			TrelloPro.settings = jQuery.extend({}, TrelloPro.settings, boardSettings);
 
-		// TODO set data?
-		//TrelloPro.data = settings['data_'+TrelloPro.boardId] ? settings['data_'+TrelloPro.boardId] : null;
+			// TODO set data?
+			//TrelloPro.data = settings['data_'+TrelloPro.boardId] ? settings['data_'+TrelloPro.boardId] : null;
 
-		setTimeout(function () {
-			log('loading board...');
-			loadCss()
-				.then(() => parseCurrentCards())
-				.then(() => buildInitialData())
-				.then(() => {
-					log('[ TrelloPro loaded ]');
-					TrelloPro.loaded = true;
-					buildFooter();
-					refreshListsAndStats();
-					buildListOrientationToggle();
-					buildListsFilter();					
-					buildPriorityFilter();
-					buildProjectFilter();
-					buildLabelsFilter();
-					buildHashtagsFilter();
-					rebuildDynamicStyles();
-					buildSettingsPane();
-					//buildNotificationsButton();
-					buildSyncButton();
-					buildMenu();
-				})
-		}, 500);
-	});
+			setTimeout(function () {
+				log('loading board...');
+				loadCss()
+					.then(() => parseCurrentCards())
+					.then(() => buildInitialData())
+					.then(() => {
+						log('[ TrelloPro loaded ]');
+						TrelloPro.loaded = true;
+						buildFooter();
+						refreshListsAndStats();
+						buildListOrientationToggle();
+						buildListsFilter();					
+						buildPriorityFilter();
+						buildProjectFilter();
+						buildLabelsFilter();
+						buildHashtagsFilter();
+						rebuildDynamicStyles();
+						buildSettingsPane();
+						//buildNotificationsButton();
+						buildSyncButton();
+						buildMenu();
+					})
+			}, 500);
+		});
+	});	
 }
 
 // -----------------------------------------------------------------------------

@@ -40,7 +40,7 @@ function loadSettings() {
   updateBoardSync(() => {
     boardId = window.location.hash.replace('#b=','');
     let storage = boardSync ? chrome.storage.sync : chrome.storage.local;
-    storage.get(['defaults','board_' + boardId], function (globalSettings) {
+    storage.get(['board_' + boardId], function (globalSettings) {
       boardSettings = globalSettings['board_' + boardId];
       if(boardSettings) {
         applySettings(boardSettings);
