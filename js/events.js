@@ -11,7 +11,7 @@ chrome.runtime.onInstalled.addListener(function(details){
 				chrome.tabs.create({url: '/docs/pro-for-trello-updated-to-2.0.html'});
 				break;
 			} 			
-			else if(version == '3.2.1') { // migrate all settings and data to local storage, thank you Google :(
+			else if(version == '3.3') { // migrate all settings and data to local storage, thank you Google :(
 				let migrate = {};
 				chrome.storage.sync.get(function(data){					
 					for(let key in data) {
