@@ -394,8 +394,6 @@ let rebuildDynamicStyles = function () {
 				}
 			}
 		}
-
-		// TODO horizontal lanes
 	}
 
 	TrelloPro.$dynamicStyles.html(css);
@@ -1033,7 +1031,7 @@ let buildSyncButton = function () {
 	let $syncButton = jQuery('<a class="subtle button tpro-sync-board-button" href="#">Sync this board</a>');
 	$popup.append('<div class="tpro-sync-no-boards" style="padding: 10px">None of your boards are synchronized at the moment.</div>')
 	$popup.append(jQuery('<div style="text-align: center"></div>').append($syncButton));
-	$popup.append('<hr /><div style="text-align: center"><a href="#">What is this?</a></div>');
+	$popup.append('<hr /><div style="text-align: center"><a href="https://youtu.be/S1wKS8eijzY" target="_blank">What is this?</a></div>');
 
 	TrelloPro.$syncButton = jQuery('<a id="tpro-sync-button" class="board-header-btn calendar-btn" href="#"><span class="icon-sm icon-sync board-header-btn-icon"></span></a>');
 	if(TrelloPro.globals.syncBoards.indexOf(TrelloPro.boardId) >= 0) {

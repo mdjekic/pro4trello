@@ -1,0 +1,118 @@
+<!-- Added price entries (contribution by abeimler https://github.com/abeimler) -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Pro for Trello updated!</title>
+    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+    <link rel="stylesheet" href="../css/normalize.css">
+    <link rel="stylesheet" href="../css/skeleton.css">
+    <link rel="stylesheet" href="../css/docs.css">
+    <link rel="stylesheet" href="../lib/font-awesome/css/font-awesome.min.css">
+    <script type="text/javascript" src="../js/analytics.js"></script>
+</head>
+
+<body>
+    <div class="container">
+
+        <section class="header">
+            <h1 class="title">Pro4Trello rushes to v3.3</h1>
+            <p class="subtitle">We're handling a big issue for some users.</p>
+            <p>
+				<a id="patreon" href="https://www.patreon.com/bePatron?u=4529164">Become a Patron!</a>				
+			</p>
+        </section>
+
+        <hr />
+
+        <p class="center">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/S1wKS8eijzY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </p>
+
+        <hr />
+
+        <h2 class="title center">1. WHAT'S CHANGED?</h2>
+
+        <h3 class="docs-header center">1.1 ALL SETTINGS ARE NOW STORED LOCALLY</h3>
+        <p class="center">
+            We've all been enjoying the fact that our settings work accross all our Chrome browsers...until it stopped working (for some of us).
+            Turns out Chrome sync storage is <strong>extremely limited</strong> and it's actually fairly easy to overflow it when you're using Pro4trello for many boards.
+        </p>
+        <p>
+            The first step was to push all settings back to Chrome local storage, which is exponentially larger. 
+            Chrome Store didn't allow Pro4trello to use unlimited storage so we'll cross that bridge if/when we get there, for now it seems there's plenty.
+        </p>
+
+        <h3 class="docs-header center">1.2 SYNC UP TO 5 BOARDS ACCROSS BROWSERS</h3>
+        <p class="center">
+            You can now synchronize up to 5 boards accross all your Chrome browsers.
+        </p>
+        <p class="center">
+            <img style="width: 400px; border: 1px solid #CCC;" src="../img/docs/sync-boards.png" />
+        </p>   
+        <p class="center">
+            Look for the sync icon in your bottom right corner, next to the Pro4Trello icon and click to open your sync menu.
+        </p>
+        <p class="center">
+            <img style="width: 400px; border: 1px solid #CCC;" src="../img/docs/sync-boards-menu.png" />
+        </p>   
+        <p class="center">
+            Please have in mind that this is a <strong>temporary solution</strong>! Read below for more info :)
+        </p>
+
+        <h2 class="title center">2. WHAT'S NEXT?</h2>
+
+        <p>
+            So glad you asked!
+        </p>
+        <p>
+            Since being able to sync settings accross all Chrome instances is like super relevant and a great thing Pro4Trello had since day one,
+            we'll work to build the sync by leveraging Google Drive. The idea comes from this:
+            in order to use sync up until this point, you had to be logged in to Chrome, which means you have a Google account, which means you have Google Drive :) 
+        </p>
+        <p>
+            That being said, the idea is to have you authorize Pro4Trello to write all your settings into a folder in your Google Drive. Boom, problem solved!
+        </p>
+        <p>
+            <strong>Hint</strong>: this might actually unlock the potential for buliding sync between different users (for specific boards), 
+            so that you don't have to import and export settings to share within your team or organization.
+        </p>
+
+        <hr />
+
+        <section class="footer">
+            <h2 class="title center">FAQ</h2>            
+
+            <h3>Why sync up to 5 boards, why not more?</h3>
+            <p>
+                Honestly I picked this number more or less arbitrary. I can't know how much space everyone is using to determine the optimal number. 
+                This is becasuse Pro4trello doesn't track anything (and I tend to keep it that way), it focuses on the value. 
+                But hey, this will become completely irrelevant when we move over to Google Drive :)
+            </p>
+
+            <h3>What happened with my feature request?</h3>
+            <p>
+                Thank you for suggesting new features and pointing out Pro4Trello's flaws.
+                Please stay patient until the time comes for your feature request to become a part of one of the next updates.
+                And rest assured it will, work is being done, always :)
+            </p>            
+
+            <p style="text-align: right;">
+                <strong>Miloš Đekić</strong><br />- author of Pro for Trello
+            </p>
+
+            <section class="footer" style="text-align: center;">
+                <hr style="margin-bottom: 5px" />
+                <a href="https://twitter.com/milos_djekic" target="_blank" style="color: #1da1f2"><i class="fa fa-twitter" aria-hidden="true"></i></a>&nbsp;&nbsp;
+                <a href="https://www.linkedin.com/in/mdjekic" target="_blank" style="color: #0077b5"><i class="fa fa-linkedin" aria-hidden="true"></i></a>&nbsp;&nbsp;
+                <a href="http://www.youtube.com/c/MilošĐekić " target="_blank" style="color: #e52d27"><i class="fa fa-youtube" aria-hidden="true"></i></a>&nbsp;&nbsp;
+                <a href="http://milos.djekic.net" target="_blank" style="color: #464646"><i class="fa fa-wordpress" aria-hidden="true"></i></a>
+            </section>
+
+    </div>
+
+</body>
+
+</html>
