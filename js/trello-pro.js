@@ -112,7 +112,7 @@ let calculatePrice = function (price1, price2) {
  */
 let renderAttrName = function (name) {
 	return name.toLowerCase()
-		.replace(/[!@#$%^&*(),.?":{}|<> ]/gi, '-') // special characters
+		.replace(/[!@#$%^&*(),.?":{}|<>\[\]\/ ]/gi, '-') // special characters
 		.replace(/(-)(?=.*\1)/g, "");
 }
 
